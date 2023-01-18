@@ -7,7 +7,7 @@ use App\Models\LoginHistory;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -62,23 +62,28 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return mixed
+     * @return \App\Models\User
      */
     protected function create(array $data)
     {
-        DB::beginTransaction();
-        try{
-            $user = User::create([
-                'name' => $data['name'],
-                'access' => 'user',
-                'status' => 'deactivated',
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-            ]);
-            LoginHistory::create(['user_id'=>$user->id,'login_at'=>now()]);
-            DB::commit();
-        }catch (\Exception $e){
-            return redirect('/');
-        }
+        return User::create([
+            'name' => $data['name'],
+            'access' => 'customer',
+            'status' => 'deactivated',
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+    }
+
+    /**
+     * The user has been registered.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function registered(Request $request, $user)
+    {
+        LoginHistory::create(['user_id'=>$user->id,'login_at'=>now()]);
     }
 }
