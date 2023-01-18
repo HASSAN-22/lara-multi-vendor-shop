@@ -132,8 +132,8 @@ module.exports = function(Chart) {
 		},
 
 		update: function update(reset) {
-			var me = this;
-			var chart = me.chart,
+			var _this = this;
+			var chart = _this.chart,
 				chartArea = chart.chartArea,
 				opts = chart.options,
 				arcOpts = opts.elements.arc,
@@ -144,7 +144,7 @@ module.exports = function(Chart) {
 					x: 0,
 					y: 0
 				},
-				meta = me.getMeta(),
+				meta = _this.getMeta(),
 				cutoutPercentage = opts.cutoutPercentage,
 				circumference = opts.circumference;
 
@@ -173,19 +173,19 @@ module.exports = function(Chart) {
 			chart.offsetX = offset.x * chart.outerRadius;
 			chart.offsetY = offset.y * chart.outerRadius;
 
-			meta.total = me.calculateTotal();
+			meta.total = _this.calculateTotal();
 
-			me.outerRadius = chart.outerRadius - (chart.radiusLength * me.getRingIndex(me.index));
-			me.innerRadius = me.outerRadius - chart.radiusLength;
+			_this.outerRadius = chart.outerRadius - (chart.radiusLength * _this.getRingIndex(_this.index));
+			_this.innerRadius = _this.outerRadius - chart.radiusLength;
 
 			helpers.each(meta.data, function(arc, index) {
-				me.updateElement(arc, index, reset);
+				_this.updateElement(arc, index, reset);
 			});
 		},
 
 		updateElement: function(arc, index, reset) {
-			var me = this;
-			var chart = me.chart,
+			var _this = this;
+			var chart = _this.chart,
 				chartArea = chart.chartArea,
 				opts = chart.options,
 				animationOpts = opts.animation,
@@ -194,16 +194,16 @@ module.exports = function(Chart) {
 				centerY = (chartArea.top + chartArea.bottom) / 2,
 				startAngle = opts.rotation, // non reset case handled later
 				endAngle = opts.rotation, // non reset case handled later
-				dataset = me.getDataset(),
-				circumference = reset && animationOpts.animateRotate ? 0 : arc.hidden ? 0 : me.calculateCircumference(dataset.data[index]) * (opts.circumference / (2.0 * Math.PI)),
-				innerRadius = reset && animationOpts.animateScale ? 0 : me.innerRadius,
-				outerRadius = reset && animationOpts.animateScale ? 0 : me.outerRadius,
+				dataset = _this.getDataset(),
+				circumference = reset && animationOpts.animateRotate ? 0 : arc.hidden ? 0 : _this.calculateCircumference(dataset.data[index]) * (opts.circumference / (2.0 * Math.PI)),
+				innerRadius = reset && animationOpts.animateScale ? 0 : _this.innerRadius,
+				outerRadius = reset && animationOpts.animateScale ? 0 : _this.outerRadius,
 				custom = arc.custom || {},
 				valueAtIndexOrDefault = helpers.getValueAtIndexOrDefault;
 
 			helpers.extend(arc, {
 				// Utility
-				_datasetIndex: me.index,
+				_datasetIndex: _this.index,
 				_index: index,
 
 				// Desired view properties
@@ -220,15 +220,17 @@ module.exports = function(Chart) {
 			});
 
 			var model = arc._model;
-			// Resets the visual styles
-			this.removeHoverStyle(arc);
+			model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : valueAtIndexOrDefault(dataset.backgroundColor, index, arcOpts.backgroundColor);
+			model.hoverBackgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : valueAtIndexOrDefault(dataset.hoverBackgroundColor, index, arcOpts.hoverBackgroundColor);
+			model.borderWidth = custom.borderWidth ? custom.borderWidth : valueAtIndexOrDefault(dataset.borderWidth, index, arcOpts.borderWidth);
+			model.borderColor = custom.borderColor ? custom.borderColor : valueAtIndexOrDefault(dataset.borderColor, index, arcOpts.borderColor);
 
 			// Set correct angles if not resetting
 			if (!reset || !animationOpts.animateRotate) {
 				if (index === 0) {
 					model.startAngle = opts.rotation;
 				} else {
-					model.startAngle = me.getMeta().data[index - 1]._model.endAngle;
+					model.startAngle = _this.getMeta().data[index - 1]._model.endAngle;
 				}
 
 				model.endAngle = model.startAngle + model.circumference;

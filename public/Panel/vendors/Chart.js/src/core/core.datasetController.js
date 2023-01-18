@@ -25,11 +25,10 @@ module.exports = function(Chart) {
 		dataElementType: null,
 
 		initialize: function(chart, datasetIndex) {
-			var me = this;
-			me.chart = chart;
-			me.index = datasetIndex;
-			me.linkScales();
-			me.addElements();
+			this.chart = chart;
+			this.index = datasetIndex;
+			this.linkScales();
+			this.addElements();
 		},
 
 		updateIndex: function(datasetIndex) {
@@ -37,15 +36,14 @@ module.exports = function(Chart) {
 		},
 
 		linkScales: function() {
-			var me = this;
-			var meta = me.getMeta();
-			var dataset = me.getDataset();
+			var meta = this.getMeta();
+			var dataset = this.getDataset();
 
 			if (meta.xAxisID === null) {
-				meta.xAxisID = dataset.xAxisID || me.chart.options.scales.xAxes[0].id;
+				meta.xAxisID = dataset.xAxisID || this.chart.options.scales.xAxes[0].id;
 			}
 			if (meta.yAxisID === null) {
-				meta.yAxisID = dataset.yAxisID || me.chart.options.scales.yAxes[0].id;
+				meta.yAxisID = dataset.yAxisID || this.chart.options.scales.yAxes[0].id;
 			}
 		},
 

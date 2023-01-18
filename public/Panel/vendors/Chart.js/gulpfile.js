@@ -18,8 +18,7 @@ var gulp = require('gulp'),
   browserify = require('browserify'),
   streamify = require('gulp-streamify'),
   source = require('vinyl-source-stream'),
-  merge = require('merge-stream'),
-  collapse = require('bundle-collapser/plugin');
+  merge = require('merge-stream');
 
 var srcDir = './src/';
 var outDir = './dist/';
@@ -70,8 +69,7 @@ gulp.task('default', ['build', 'watch']);
 
 function buildTask() {
 
-  var bundled = browserify('./src/chart.js', { standalone: 'Chart' })
-    .plugin(collapse)
+  var bundled = browserify('./src/chart.js')
     .bundle()
     .pipe(source('Chart.bundle.js'))
     .pipe(insert.prepend(header))
@@ -83,9 +81,8 @@ function buildTask() {
     .pipe(streamify(concat('Chart.bundle.min.js')))
     .pipe(gulp.dest(outDir));
 
-  var nonBundled = browserify('./src/chart.js', { standalone: 'Chart' })
+  var nonBundled = browserify('./src/chart.js')
     .ignore('moment')
-    .plugin(collapse)
     .bundle()
     .pipe(source('Chart.js'))
     .pipe(insert.prepend(header))
@@ -128,10 +125,10 @@ function bumpTask(complete) {
     // Write these to their own files, then build the output
     fs.writeFileSync('package.json', JSON.stringify(package, null, 2));
     fs.writeFileSync('bower.json', JSON.stringify(bower, null, 2));
-
+    
     var oldCDN = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/'+oldVersion+'/Chart.min.js',
       newCDN = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/'+newVersion+'/Chart.min.js';
-
+    
     gulp.src(['./README.md'])
       .pipe(replace(oldCDN, newCDN))
       .pipe(gulp.dest('./'));

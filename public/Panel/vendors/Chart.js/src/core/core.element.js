@@ -10,90 +10,81 @@ module.exports = function(Chart) {
     helpers.extend(this, configuration);
     this.initialize.apply(this, arguments);
   };
-
   helpers.extend(Chart.Element.prototype, {
-
     initialize: function() {
       this.hidden = false;
     },
-
     pivot: function() {
-      var me = this;
-      if (!me._view) {
-        me._view = helpers.clone(me._model);
+      if (!this._view) {
+        this._view = helpers.clone(this._model);
       }
-      me._start = helpers.clone(me._view);
-      return me;
+      this._start = helpers.clone(this._view);
+      return this;
     },
-
     transition: function(ease) {
-      var me = this;
-      
-      if (!me._view) {
-        me._view = helpers.clone(me._model);
+      if (!this._view) {
+        this._view = helpers.clone(this._model);
       }
 
       // No animation -> No Transition
       if (ease === 1) {
-        me._view = me._model;
-        me._start = null;
-        return me;
+        this._view = this._model;
+        this._start = null;
+        return this;
       }
 
-      if (!me._start) {
-        me.pivot();
+      if (!this._start) {
+        this.pivot();
       }
 
-      helpers.each(me._model, function(value, key) {
+      helpers.each(this._model, function(value, key) {
 
         if (key[0] === '_') {
           // Only non-underscored properties
         }
 
         // Init if doesn't exist
-        else if (!me._view.hasOwnProperty(key)) {
-          if (typeof value === 'number' && !isNaN(me._view[key])) {
-            me._view[key] = value * ease;
+        else if (!this._view.hasOwnProperty(key)) {
+          if (typeof value === 'number' && !isNaN(this._view[key])) {
+            this._view[key] = value * ease;
           } else {
-            me._view[key] = value;
+            this._view[key] = value;
           }
         }
 
         // No unnecessary computations
-        else if (value === me._view[key]) {
+        else if (value === this._view[key]) {
           // It's the same! Woohoo!
         }
 
         // Color transitions if possible
         else if (typeof value === 'string') {
           try {
-            var color = helpers.color(me._model[key]).mix(helpers.color(me._start[key]), ease);
-            me._view[key] = color.rgbString();
+            var color = helpers.color(this._model[key]).mix(helpers.color(this._start[key]), ease);
+            this._view[key] = color.rgbString();
           } catch (err) {
-            me._view[key] = value;
+            this._view[key] = value;
           }
         }
         // Number transitions
         else if (typeof value === 'number') {
-          var startVal = me._start[key] !== undefined && isNaN(me._start[key]) === false ? me._start[key] : 0;
-          me._view[key] = ((me._model[key] - startVal) * ease) + startVal;
+          var startVal = this._start[key] !== undefined && isNaN(this._start[key]) === false ? this._start[key] : 0;
+          this._view[key] = ((this._model[key] - startVal) * ease) + startVal;
         }
         // Everything else
         else {
-          me._view[key] = value;
+          this._view[key] = value;
         }
-      }, me);
+      }, this);
 
-      return me;
+      return this;
     },
-
     tooltipPosition: function() {
       return {
         x: this._model.x,
         y: this._model.y
       };
     },
-
     hasValue: function() {
       return helpers.isNumber(this._model.x) && helpers.isNumber(this._model.y);
     }

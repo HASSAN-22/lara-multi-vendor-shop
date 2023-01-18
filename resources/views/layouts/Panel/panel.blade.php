@@ -1,44 +1,47 @@
 <?php
-
-    $user = auth()->user();
+$user = auth()->user();
 ?>
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="fontiran.com:license" content="Y68A9">
-    <link rel="icon" href="{{asset('Panel/build/images/favicon.ico')}}" type="image/ico"/>
-    <title>Gentelella Alela! | قالب مدیریت رایگان </title>
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <link rel="icon" href="{{asset('Panel/images/favicon.ico')}}" type="image/ico" />
+
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Bootstrap -->
     <link href="{{asset('Panel/vendors/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
-    <link href="{{asset('Panel/vendors/bootstrap-rtl/dist/css/bootstrap-rtl.min.css')}}" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="{{asset('Panel/vendors/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- NProgress -->
-    <link href="{{asset('Panel/vendors/nprogress/nprogress.css')}}" rel="stylesheet">
-    <!-- bootstrap-progressbar -->
-    <link href="{{asset('Panel/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css')}}" rel="stylesheet">
+    <link href="{{asset('Panel/vendors/nprogress/nprogres')}}s.css" rel="stylesheet">
     <!-- iCheck -->
     <link href="{{asset('Panel/vendors/iCheck/skins/flat/green.css')}}" rel="stylesheet">
-    <!-- bootstrap-daterangepicker -->
-    <link href="{{asset('Panel/vendors/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet">
 
-<!-- bootstrap-wysiwyg -->
-<link href="{{asset('Panel/vendors/google-code-prettify/bin/prettify.min.css')}}" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="{{asset('Panel/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css')}}" rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="{{asset('Panel/vendors/jqvmap/dist/jqvmap.min.css')}}" rel="stylesheet"/>
+    <!-- bootstrap-daterangepicker -->
+    <link href="{{asset('Panel/vendors/bootstrap-daterangepicker/daterangepicke')}}r.css" rel="stylesheet">
 
     <!-- Custom Theme Style -->
     <link href="{{asset('Panel/build/css/custom.min.css')}}" rel="stylesheet">
+    <link href="{{asset('css.css')}}" rel="stylesheet">
+    @yield('b_css')
 </head>
-<!-- /header content -->
+
 <body class="nav-md">
 <div class="container body">
     <div class="main_container">
-        <div class="col-md-3 left_col hidden-print">
+        <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
                 <div class="navbar nav_title" style="border: 0;">
                     <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>Gentelella Alela!</span></a>
@@ -49,20 +52,21 @@
                 <!-- menu profile quick info -->
                 <div class="profile clearfix">
                     <div class="profile_pic">
-                        <img src="/Panel/build/images/img.jpg" alt="..." class="img-circle profile_img">
+                        <img src="Panel/images/img.jpg" alt="..." class="img-circle profile_img">
                     </div>
                     <div class="profile_info">
-                        <span>خوش آمدید,</span>
-                        <h2>مرتضی کریمی</h2>
+                        <span>Welcome,</span>
+                        <h2>John Doe</h2>
                     </div>
                 </div>
                 <!-- /menu profile quick info -->
 
-                <br/>
+                <br />
 
                 <!-- sidebar menu -->
                 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                     <div class="menu_section">
+                        <h3>General</h3>
                         <ul class="nav side-menu">
                             @if($user->isAdmin())
                                 @include('layouts.Panel.admin-sidebar')
@@ -71,105 +75,96 @@
                             @else
                                 @include('layouts.Panel.vendor-sidebar')
                             @endif
-                            @include('layouts.Panel.sidebar')
+                                @include('layouts.Panel.sidebar')
                         </ul>
                     </div>
+
                 </div>
                 <!-- /sidebar menu -->
             </div>
         </div>
 
         <!-- top navigation -->
-        <div class="top_nav hidden-print">
+        <div class="top_nav">
             <div class="nav_menu">
-                <nav>
-                    <div class="nav toggle">
-                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-                    </div>
-
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="">
-                            <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
-                               aria-expanded="false">
-                                <img src="/Panel/build/images/img.jpg" alt="">مرتضی کریمی
-                                <span class=" fa fa-angle-down"></span>
+                <div class="nav toggle">
+                    <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                </div>
+                <nav class="nav navbar-nav">
+                    <ul class=" navbar-right">
+                        <li class="nav-item dropdown open" style="padding-left: 15px;">
+                            <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
+                                <img src="Panel/images/img.jpg" alt="">John Doe
                             </a>
-                            <ul class="dropdown-menu dropdown-usermenu pull-right">
-                                <li><a href="javascript:;"> نمایه</a></li>
-                                <li>
-                                    <a href="javascript:;">
-                                        <span class="badge bg-red pull-right">50%</span>
-                                        <span>تنظیمات</span>
-                                    </a>
-                                </li>
-                                <li><a href="javascript:;">کمک</a></li>
-                                <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> خروج</a></li>
-                            </ul>
+                            <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item"  href="javascript:;"> Profile</a>
+                                <a class="dropdown-item"  href="javascript:;">
+                                    <span class="badge bg-red pull-right">50%</span>
+                                    <span>Settings</span>
+                                </a>
+                                <a class="dropdown-item"  href="javascript:;">Help</a>
+                                <a class="dropdown-item"  href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+                            </div>
                         </li>
 
-                        <li role="presentation" class="dropdown">
-                            <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown"
-                               aria-expanded="false">
+                        <li role="presentation" class="nav-item dropdown open">
+                            <a href="javascript:;" class="dropdown-toggle info-number" id="navbarDropdown1" data-toggle="dropdown" aria-expanded="false">
                                 <i class="fa fa-envelope-o"></i>
                                 <span class="badge bg-green">6</span>
                             </a>
-                            <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="/Panel/build/images/img.jpg"
-                                                                 alt="Profile Image"/></span>
+                            <ul class="dropdown-menu list-unstyled msg_list" role="menu" aria-labelledby="navbarDropdown1">
+                                <li class="nav-item">
+                                    <a class="dropdown-item">
+                                        <span class="image"><img src="Panel/images/img.jpg" alt="Profile Image" /></span>
                                         <span>
-                          <span>مرتضی کریمی</span>
-                          <span class="time">3 دقیقه پیش</span>
+                          <span>John Smith</span>
+                          <span class="time">3 mins ago</span>
                         </span>
                                         <span class="message">
-                          فیلمای فستیوال فیلمایی که اجرا شده یا راجع به لحظات مرده ایه که فیلمسازا میسازن. آنها جایی بودند که....
+                          Film festivals used to be do-or-die moments for movie makers. They were where...
                         </span>
                                     </a>
                                 </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="/Panel/build/images/img.jpg"
-                                                                 alt="Profile Image"/></span>
+                                <li class="nav-item">
+                                    <a class="dropdown-item">
+                                        <span class="image"><img src="Panel/images/img.jpg" alt="Profile Image" /></span>
                                         <span>
-                          <span>مرتضی کریمی</span>
-                          <span class="time">3 دقیقه پیش</span>
+                          <span>John Smith</span>
+                          <span class="time">3 mins ago</span>
                         </span>
                                         <span class="message">
-                          فیلمای فستیوال فیلمایی که اجرا شده یا راجع به لحظات مرده ایه که فیلمسازا میسازن. آنها جایی بودند که....
+                          Film festivals used to be do-or-die moments for movie makers. They were where...
                         </span>
                                     </a>
                                 </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="/Panel/build/images/img.jpg"
-                                                                 alt="Profile Image"/></span>
+                                <li class="nav-item">
+                                    <a class="dropdown-item">
+                                        <span class="image"><img src="Panel/images/img.jpg" alt="Profile Image" /></span>
                                         <span>
-                          <span>مرتضی کریمی</span>
-                          <span class="time">3 دقیقه پیش</span>
+                          <span>John Smith</span>
+                          <span class="time">3 mins ago</span>
                         </span>
                                         <span class="message">
-                          فیلمای فستیوال فیلمایی که اجرا شده یا راجع به لحظات مرده ایه که فیلمسازا میسازن. آنها جایی بودند که....
+                          Film festivals used to be do-or-die moments for movie makers. They were where...
                         </span>
                                     </a>
                                 </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="/Panel/build/images/img.jpg"
-                                                                 alt="Profile Image"/></span>
+                                <li class="nav-item">
+                                    <a class="dropdown-item">
+                                        <span class="image"><img src="Panel/images/img.jpg" alt="Profile Image" /></span>
                                         <span>
-                          <span>مرتضی کریمی</span>
-                          <span class="time">3 دقیقه پیش</span>
+                          <span>John Smith</span>
+                          <span class="time">3 mins ago</span>
                         </span>
                                         <span class="message">
-                          فیلمای فستیوال فیلمایی که اجرا شده یا راجع به لحظات مرده ایه که فیلمسازا میسازن. آنها جایی بودند که....
+                          Film festivals used to be do-or-die moments for movie makers. They were where...
                         </span>
                                     </a>
                                 </li>
-                                <li>
+                                <li class="nav-item">
                                     <div class="text-center">
-                                        <a>
-                                            <strong>مشاهده تمام اعلان ها</strong>
+                                        <a class="dropdown-item">
+                                            <strong>See All Alerts</strong>
                                             <i class="fa fa-angle-right"></i>
                                         </a>
                                     </div>
@@ -181,465 +176,62 @@
             </div>
         </div>
         <!-- /top navigation -->
-        <!-- /header content -->
 
-<!-- page content -->
-<div class="right_col" role="main">
-    <div class="">
-
-        <div class="page-title">
-            <div class="title_left">
-                <h3>طرح صندوق ورودی
-                    <small>بعضی از نمونه‌ها برای شروع کار شما</small>
-                </h3>
-            </div>
-
-            <div class="title_right">
-                <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="جست و جو برای...">
-                        <span class="input-group-btn">
-                      <button class="btn btn-default" type="button">برو!</button>
-                    </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="clearfix"></div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="x_panel">
-                    <div class="x_title">
-                        <h2>طرح صندوق ورودی
-                            <small>ایمیل کاربر</small>
-                        </h2>
-                        <ul class="nav navbar-right panel_toolbox">
-                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                   aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#">تنظیمات 1</a>
-                                    </li>
-                                    <li><a href="#">تنظیمات 2</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a>
-                            </li>
-                        </ul>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <div class="row">
-                            <div class="col-sm-3 mail_list_column">
-                                <button id="compose" class="btn btn-sm btn-success btn-block" type="button">ساختن
-                                </button>
-                                <a href="#">
-                                    <div class="mail_list">
-                                        <div class="right">
-                                            <i class="fa fa-circle"></i> <i class="fa fa-edit"></i>
-                                        </div>
-                                        <div class="left">
-                                            <h3>دنیس موگو
-                                                <small>3:00 بعد از ظهر</small>
-                                            </h3>
-                                            <p>تمرکز بیشتر بر روی تمرینات ورزشی، تمرینات ذهنی و ...</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="mail_list active">
-                                        <div class="right">
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <div class="left">
-                                            <h3>جین نوبرت
-                                                <small>4:09 بعد از ظهر</small>
-                                            </h3>
-                                            <p><span class="badge">To</span> تمرکز بیشتر بر روی تمرینات ورزشی، تمرینات
-                                                ذهنی و ...</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="mail_list">
-                                        <div class="right">
-                                            <i class="fa fa-circle-o"></i><i class="fa fa-paperclip"></i>
-                                        </div>
-                                        <div class="left">
-                                            <h3>مسیمبی آن
-                                                <small>4:09 بعد از ظهر</small>
-                                            </h3>
-                                            <p><span class="badge">CC</span> تمرکز بیشتر بر روی تمرینات ورزشی، تمرینات
-                                                ذهنی و ...</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="mail_list">
-                                        <div class="right">
-                                            <i class="fa fa-paperclip"></i>
-                                        </div>
-                                        <div class="left">
-                                            <h3>جان دبیس
-                                                <small>4:09 بعد از ظهر</small>
-                                            </h3>
-                                            <p>تمرکز بیشتر بر روی تمرینات ورزشی، تمرینات ذهنی و ...</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="mail_list">
-                                        <div class="right">
-                                            .
-                                        </div>
-                                        <div class="left">
-                                            <h3>دبیس و ریموند
-                                                <small>4:09 بعد از ظهر</small>
-                                            </h3>
-                                            <p>تمرکز بیشتر بر روی تمرینات ورزشی، تمرینات ذهنی و ...</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="mail_list">
-                                        <div class="right">
-                                            .
-                                        </div>
-                                        <div class="left">
-                                            <h3>دبیس و ریموند
-                                                <small>4:09 بعد از ظهر</small>
-                                            </h3>
-                                            <p>تمرکز بیشتر بر روی تمرینات ورزشی، تمرینات ذهنی و ...</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="mail_list">
-                                        <div class="right">
-                                            <i class="fa fa-circle"></i> <i class="fa fa-edit"></i>
-                                        </div>
-                                        <div class="left">
-                                            <h3>دنیس موگو
-                                                <small>3:00 بعد از ظهر</small>
-                                            </h3>
-                                            <p>تمرکز بیشتر بر روی تمرینات ورزشی، تمرینات ذهنی و ...</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="mail_list">
-                                        <div class="right">
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <div class="left">
-                                            <h3>جین نوبرت
-                                                <small>4:09 بعد از ظهر</small>
-                                            </h3>
-                                            <p>تمرکز بیشتر بر روی تمرینات ورزشی، تمرینات ذهنی و ...</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <!-- /MAIL LIST -->
-
-                            <!-- CONTENT MAIL -->
-                            <div class="col-sm-9 mail_view">
-                                <div class="inbox-body">
-                                    <div class="mail_heading row">
-                                        <div class="col-md-8">
-                                            <div class="btn-group">
-                                                <button class="btn btn-sm btn-primary" type="button"><i
-                                                        class="fa fa-reply"></i> پاسخ
-                                                </button>
-                                                <button class="btn btn-sm btn-default" type="button"
-                                                        data-placement="top" data-toggle="tooltip"
-                                                        data-original-title="به جلو"><i class="fa fa-share"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-default" type="button"
-                                                        data-placement="top" data-toggle="tooltip"
-                                                        data-original-title="چاپ"><i class="fa fa-print"></i></button>
-                                                <button class="btn btn-sm btn-default" type="button"
-                                                        data-placement="top" data-toggle="tooltip"
-                                                        data-original-title="سطل آشغال"><i class="fa fa-trash-o"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 text-left">
-                                            <p class="date"> 8:02 بعد از ظهر ۱۴ خرداد ۱۳۹۶</p>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <h4> لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده
-                                                از طراحان گرافیک است چاپگرها.</h4>
-                                        </div>
-                                    </div>
-                                    <div class="sender-info">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <strong>مرتضی کریمی</strong>
-                                                <span>(me@morteza-karimi.ir)</span> به
-                                                <strong>من</strong>
-                                                <a class="sender-dropdown"><i class="fa fa-chevron-down"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="view-mail">
-                                        <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از
-                                            طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که
-                                            لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود
-                                            ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده
-                                            شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را
-                                            برای طراحان رایانه ای علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی
-                                            ایجاد کرد.</p>
-                                        <p>کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و
-                                            متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای
-                                            علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی ایجاد کرد. لورم ایپسوم
-                                            متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک
-                                            است. </p>
-                                        <p>چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای
-                                            شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای
-                                            کاربردی می باشد. در این صورت می توان امید داشت که تمام و دشواری موجود در
-                                            ارائه راهکارها و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی
-                                            دستاوردهای اصلی و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد
-                                            استفاده قرار گیرد. </p>
-                                    </div>
-                                    <div class="attachment">
-                                        <p>
-                                            <span><i class="fa fa-paperclip"></i> 3 attachments — </span>
-                                            <a href="#">دانلود تمام ضمیمه‌ها</a> |
-                                            <a href="#">مشاهده همه تصاویر</a>
-                                        </p>
-                                        <ul>
-                                            <li>
-                                                <a href="#" class="atch-thumb">
-                                                    <img src="/Panel/build/images/inbox.png" alt="img"/>
-                                                </a>
-
-                                                <div class="file-name">
-                                                    image-name.jpg
-                                                </div>
-                                                <span>12KB</span>
-
-
-                                                <div class="links">
-                                                    <a href="#">مشاهده</a> -
-                                                    <a href="#">دانلود</a>
-                                                </div>
-                                            </li>
-
-                                            <li>
-                                                <a href="#" class="atch-thumb">
-                                                    <img src="/Panel/build/images/inbox.png" alt="img"/>
-                                                </a>
-
-                                                <div class="file-name">
-                                                    img_name.jpg
-                                                </div>
-                                                <span>40KB</span>
-
-                                                <div class="links">
-                                                    <a href="#">مشاهده</a> -
-                                                    <a href="#">دانلود</a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <a href="#" class="atch-thumb">
-                                                    <img src="/Panel/build/images/inbox.png" alt="img"/>
-                                                </a>
-
-                                                <div class="file-name">
-                                                    img_name.jpg
-                                                </div>
-                                                <span>30KB</span>
-
-                                                <div class="links">
-                                                    <a href="#">مشاهده</a> -
-                                                    <a href="#">دانلود</a>
-                                                </div>
-                                            </li>
-
-                                        </ul>
-                                    </div>
-                                    <div class="btn-group">
-                                        <div class="btn-group">
-                                            <button class="btn btn-sm btn-primary" type="button"><i
-                                                    class="fa fa-reply"></i> پاسخ
-                                            </button>
-                                            <button class="btn btn-sm btn-default" type="button"
-                                                    data-placement="top" data-toggle="tooltip"
-                                                    data-original-title="به جلو"><i class="fa fa-share"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-default" type="button"
-                                                    data-placement="top" data-toggle="tooltip"
-                                                    data-original-title="چاپ"><i class="fa fa-print"></i></button>
-                                            <button class="btn btn-sm btn-default" type="button"
-                                                    data-placement="top" data-toggle="tooltip"
-                                                    data-original-title="سطل آشغال"><i class="fa fa-trash-o"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <!-- /CONTENT MAIL -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- /page content -->
-<!-- compose -->
-<div class="compose col-md-6 col-xs-12">
-    <div class="compose-header">
-        پیام جدید
-        <button type="button" class="close compose-close">
-            <span>×</span>
-        </button>
-    </div>
-
-    <div class="compose-body">
-        <div id="alerts"></div>
-
-        <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#editor">
-            <div class="btn-group">
-                <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="fa fa-font"></i><b
-                        class="caret"></b></a>
-                <ul class="dropdown-menu">
-                </ul>
-            </div>
-
-            <div class="btn-group">
-                <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i
-                        class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a data-edit="fontSize 5">
-                            <p style="font-size:17px">بزرگ</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a data-edit="fontSize 3">
-                            <p style="font-size:14px">متوسط</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a data-edit="fontSize 1">
-                            <p style="font-size:11px">کوچک</p>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="btn-group">
-                <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
-                <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>
-                <a class="btn" data-edit="strikethrough" title="Strikethrough"><i class="fa fa-strikethrough"></i></a>
-                <a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>
-            </div>
-
-            <div class="btn-group">
-                <a class="btn" data-edit="insertunorderedlist" title="لیست نقطه‌ای"><i class="fa fa-list-ul"></i></a>
-                <a class="btn" data-edit="insertorderedlist" title="لیست عددی"><i class="fa fa-list-ol"></i></a>
-                <a class="btn" data-edit="outdent" title="کاهش دندانه (Shift+Tab)"><i class="fa fa-dedent"></i></a>
-                <a class="btn" data-edit="indent" title="دندانه (Tab)"><i class="fa fa-indent"></i></a>
-            </div>
-
-            <div class="btn-group">
-                <a class="btn" data-edit="justifyleft" title="چپ چین (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
-                <a class="btn" data-edit="justifycenter" title="وسط چین (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
-                <a class="btn" data-edit="justifyright" title="راست چین (Ctrl/Cmd+R)"><i
-                        class="fa fa-align-right"></i></a>
-                <a class="btn" data-edit="justifyfull" title="جاستیفای (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
-            </div>
-
-            <div class="btn-group">
-                <a class="btn dropdown-toggle" data-toggle="dropdown" title="لینک عظیم"><i class="fa fa-link"></i></a>
-                <div class="dropdown-menu input-append">
-                    <input class="span2" placeholder="URL" type="text" data-edit="createLink"/>
-                    <button class="btn" type="button">افزودن</button>
-                </div>
-                <a class="btn" data-edit="unlink" title="حذف لینک عظیم"><i class="fa fa-cut"></i></a>
-            </div>
-
-            <div class="btn-group">
-                <a class="btn" title="افزودن تصویر (ویا فقط بکشید و رها کنید)" id="pictureBtn"><i
-                        class="fa fa-picture-o"></i></a>
-                <input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage"/>
-            </div>
-
-            <div class="btn-group">
-                <a class="btn" data-edit="undo" title="لغو عمل قبلی (Ctrl/Cmd+Z)"><i class="fa fa-undo"></i></a>
-                <a class="btn" data-edit="redo" title="بازگردانی عمل لغو شده (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
-            </div>
-        </div>
-
-        <div id="editor" class="editor-wrapper"></div>
-    </div>
-
-    <div class="compose-footer">
-        <button id="send" class="btn btn-sm btn-success" type="button">ارسال</button>
-    </div>
-</div>
-<!-- /compose -->
+        <!-- page content -->
+        @yield('content')
+        <!-- /page content -->
 
         <!-- footer content -->
-        <footer class="hidden-print">
-            <div class="pull-left">
-                Gentelella - قالب پنل مدیریت بوت استرپ <a href="https://colorlib.com">Colorlib</a> | پارسی شده توسط <a
-                    href="https://morteza-karimi.ir">مرتضی کریمی</a>
+        <footer>
+            <div class="pull-right">
+                Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
             </div>
             <div class="clearfix"></div>
         </footer>
         <!-- /footer content -->
     </div>
 </div>
-<div id="lock_screen">
-    <table>
-        <tr>
-            <td>
-                <div class="clock"></div>
-                <span class="unlock">
-                    <span class="fa-stack fa-5x">
-                      <i class="fa fa-square-o fa-stack-2x fa-inverse"></i>
-                      <i id="icon_lock" class="fa fa-lock fa-stack-1x fa-inverse"></i>
-                    </span>
-                </span>
-            </td>
-        </tr>
-    </table>
-</div>
+
 <!-- jQuery -->
 <script src="{{asset('Panel/vendors/jquery/dist/jquery.min.js')}}"></script>
 <!-- Bootstrap -->
-<script src="{{asset('Panel/vendors/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+<script src="{{asset('Panel/vendors/bootstrap/dist/js/bootstrap.bundle.min.js')}}"></script>
 <!-- FastClick -->
 <script src="{{asset('Panel/vendors/fastclick/lib/fastclick.js')}}"></script>
 <!-- NProgress -->
 <script src="{{asset('Panel/vendors/nprogress/nprogress.js')}}"></script>
+<!-- Chart.js -->
+<script src="{{asset('Panel/vendors/Chart.js/dist/Chart.min.js')}}"></script>
+<!-- gauge.js -->
+<script src="{{asset('Panel/vendors/gauge.js/dist/gauge.min.js')}}"></script>
 <!-- bootstrap-progressbar -->
 <script src="{{asset('Panel/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js')}}"></script>
 <!-- iCheck -->
 <script src="{{asset('Panel/vendors/iCheck/icheck.min.js')}}"></script>
-
+<!-- Skycons -->
+<script src="{{asset('Panel/vendors/skycons/skycons.js')}}"></script>
+<!-- Flot -->
+<script src="{{asset('Panel/vendors/Flot/jquery.flot.js')}}"></script>
+<script src="{{asset('Panel/vendors/Flot/jquery.flot.pie.js')}}"></script>
+<script src="{{asset('Panel/vendors/Flot/jquery.flot.time.js')}}"></script>
+<script src="{{asset('Panel/vendors/Flot/jquery.flot.stack.js')}}"></script>
+<script src="{{asset('Panel/vendors/Flot/jquery.flot.resize.js')}}"></script>
+<!-- Flot plugins -->
+<script src="{{asset('Panel/vendors/flot.orderbars/js/jquery.flot.orderBars.js')}}"></script>
+<script src="{{asset('Panel/vendors/flot-spline/js/jquery.flot.spline.min.js')}}"></script>
+<script src="{{asset('Panel/vendors/flot.curvedlines/curvedLines.js')}}"></script>
+<!-- DateJS -->
+<script src="{{asset('Panel/vendors/DateJS/build/date.js')}}"></script>
+<!-- JQVMap -->
+<script src="{{asset('Panel/vendors/jqvmap/dist/jquery.vmap.js')}}"></script>
+<script src="{{asset('Panel/vendors/jqvmap/dist/maps/jquery.vmap.world.js')}}"></script>
+<script src="{{asset('Panel/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js')}}"></script>
 <!-- bootstrap-daterangepicker -->
 <script src="{{asset('Panel/vendors/moment/min/moment.min.js')}}"></script>
-
 <script src="{{asset('Panel/vendors/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
-
-<!-- bootstrap-wysiwyg -->
-<script src="{{asset('Panel/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js')}}"></script>
-<script src="{{asset('Panel/vendors/jquery.hotkeys/jquery.hotkeys.js')}}"></script>
-<script src="{{asset('Panel/vendors/google-code-prettify/src/prettify.js')}}"></script>
 
 <!-- Custom Theme Scripts -->
 <script src="{{asset('Panel/build/js/custom.min.js')}}"></script>
-
-
+@yield('b_js')
 </body>
 </html>

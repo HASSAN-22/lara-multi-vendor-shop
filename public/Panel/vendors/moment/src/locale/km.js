@@ -1,5 +1,5 @@
 //! moment.js locale configuration
-//! locale : Cambodian [km]
+//! locale : khmer (km)
 //! author : Kruy Vanna : https://github.com/kruyvanna
 
 import moment from '../moment';
@@ -30,7 +30,6 @@ export default moment.defineLocale('km', {
         future: '%sទៀត',
         past: '%sមុន',
         s: 'ប៉ុន្មានវិនាទី',
-        ss: '%d វិនាទី',
         m: 'មួយនាទី',
         mm: '%d នាទី',
         h: 'មួយម៉ោង',

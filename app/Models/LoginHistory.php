@@ -13,6 +13,8 @@ class LoginHistory extends Model
 
     protected $fillable = ['user_id','login_at'];
 
+    public $timestamps = false;
+
     public function user(){
         return $this->belongsTo(User::class);
     }

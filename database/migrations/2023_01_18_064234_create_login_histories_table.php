@@ -17,7 +17,6 @@ class CreateLoginHistoriesTable extends Migration
             $table->id();
             $table->foreignId('user_id');
             $table->timestamp('login_at');
-            $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

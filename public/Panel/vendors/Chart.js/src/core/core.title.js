@@ -20,50 +20,43 @@ module.exports = function(Chart) {
 	Chart.Title = Chart.Element.extend({
 
 		initialize: function(config) {
-			var me = this;
-			helpers.extend(me, config);
-			me.options = helpers.configMerge(Chart.defaults.global.title, config.options);
+			helpers.extend(this, config);
+			this.options = helpers.configMerge(Chart.defaults.global.title, config.options);
 
 			// Contains hit boxes for each dataset (in dataset order)
-			me.legendHitBoxes = [];
+			this.legendHitBoxes = [];
 		},
 
 		// These methods are ordered by lifecyle. Utilities then follow.
 
-		beforeUpdate: function () {
-			var chartOpts = this.chart.options;
-			if (chartOpts && chartOpts.title) {
-				this.options = helpers.configMerge(Chart.defaults.global.title, chartOpts.title);
-			}
-		},
+		beforeUpdate: noop,
 		update: function(maxWidth, maxHeight, margins) {
-			var me = this;
 
 			// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
-			me.beforeUpdate();
+			this.beforeUpdate();
 
 			// Absorb the master measurements
-			me.maxWidth = maxWidth;
-			me.maxHeight = maxHeight;
-			me.margins = margins;
+			this.maxWidth = maxWidth;
+			this.maxHeight = maxHeight;
+			this.margins = margins;
 
 			// Dimensions
-			me.beforeSetDimensions();
-			me.setDimensions();
-			me.afterSetDimensions();
+			this.beforeSetDimensions();
+			this.setDimensions();
+			this.afterSetDimensions();
 			// Labels
-			me.beforeBuildLabels();
-			me.buildLabels();
-			me.afterBuildLabels();
+			this.beforeBuildLabels();
+			this.buildLabels();
+			this.afterBuildLabels();
 
 			// Fit
-			me.beforeFit();
-			me.fit();
-			me.afterFit();
+			this.beforeFit();
+			this.fit();
+			this.afterFit();
 			//
-			me.afterUpdate();
+			this.afterUpdate();
 
-			return me.minSize;
+			return this.minSize;
 
 		},
 		afterUpdate: noop,
@@ -72,29 +65,28 @@ module.exports = function(Chart) {
 
 		beforeSetDimensions: noop,
 		setDimensions: function() {
-			var me = this;
 			// Set the unconstrained dimension before label rotation
-			if (me.isHorizontal()) {
+			if (this.isHorizontal()) {
 				// Reset position before calculating rotation
-				me.width = me.maxWidth;
-				me.left = 0;
-				me.right = me.width;
+				this.width = this.maxWidth;
+				this.left = 0;
+				this.right = this.width;
 			} else {
-				me.height = me.maxHeight;
+				this.height = this.maxHeight;
 
 				// Reset position before calculating rotation
-				me.top = 0;
-				me.bottom = me.height;
+				this.top = 0;
+				this.bottom = this.height;
 			}
 
 			// Reset padding
-			me.paddingLeft = 0;
-			me.paddingTop = 0;
-			me.paddingRight = 0;
-			me.paddingBottom = 0;
+			this.paddingLeft = 0;
+			this.paddingTop = 0;
+			this.paddingRight = 0;
+			this.paddingBottom = 0;
 
 			// Reset minSize
-			me.minSize = {
+			this.minSize = {
 				width: 0,
 				height: 0
 			};
@@ -112,25 +104,25 @@ module.exports = function(Chart) {
 		beforeFit: noop,
 		fit: function() {
 
-			var me = this,
-				ctx = me.ctx,
+			var _this = this,
+				ctx = _this.ctx,
 				valueOrDefault = helpers.getValueOrDefault,
-				opts = me.options,
+				opts = _this.options,
 				globalDefaults = Chart.defaults.global,
 				display = opts.display,
 				fontSize = valueOrDefault(opts.fontSize, globalDefaults.defaultFontSize),
-				minSize = me.minSize;
+				minSize = _this.minSize;
 
-			if (me.isHorizontal()) {
-				minSize.width = me.maxWidth; // fill all the width
+			if (_this.isHorizontal()) {
+				minSize.width = _this.maxWidth; // fill all the width
 				minSize.height = display ? fontSize + (opts.padding * 2) : 0;
 			} else {
 				minSize.width = display ? fontSize + (opts.padding * 2) : 0;
-				minSize.height = me.maxHeight; // fill all the height
+				minSize.height = _this.maxHeight; // fill all the height
 			}
 
-			me.width = minSize.width;
-			me.height = minSize.height;
+			_this.width = minSize.width;
+			_this.height = minSize.height;
 
 		},
 		afterFit: noop,
@@ -143,10 +135,10 @@ module.exports = function(Chart) {
 
 		// Actualy draw the title block on the canvas
 		draw: function() {
-			var me = this,
-				ctx = me.ctx,
+			var _this = this,
+				ctx = _this.ctx,
 				valueOrDefault = helpers.getValueOrDefault,
-				opts = me.options,
+				opts = _this.options,
 				globalDefaults = Chart.defaults.global;
 
 			if (opts.display) {
@@ -155,18 +147,18 @@ module.exports = function(Chart) {
 					fontFamily = valueOrDefault(opts.fontFamily, globalDefaults.defaultFontFamily),
 					titleFont = helpers.fontString(fontSize, fontStyle, fontFamily),
 					rotation = 0,
-					titleX,
+					titleX, 
 					titleY,
-					top = me.top,
-					left = me.left,
-					bottom = me.bottom,
-					right = me.right;
+					top = _this.top,
+					left = _this.left,
+					bottom = _this.bottom,
+					right = _this.right;
 
 				ctx.fillStyle = valueOrDefault(opts.fontColor, globalDefaults.defaultFontColor); // render in correct colour
 				ctx.font = titleFont;
 
 				// Horizontal
-				if (me.isHorizontal()) {
+				if (_this.isHorizontal()) {
 					titleX = left + ((right - left) / 2); // midpoint of the width
 					titleY = top + ((bottom - top) / 2); // midpoint of the height
 				} else {
@@ -182,24 +174,6 @@ module.exports = function(Chart) {
 				ctx.textBaseline = 'middle';
 				ctx.fillText(opts.text, 0, 0);
 				ctx.restore();
-			}
-		}
-	});
-
-	// Register the title plugin
-	Chart.plugins.register({
-		beforeInit: function(chartInstance) {
-			var opts = chartInstance.options;
-			var titleOpts = opts.title;
-
-			if (titleOpts) {
-				chartInstance.titleBlock = new Chart.Title({
-					ctx: chartInstance.chart.ctx,
-					options: titleOpts,
-					chart: chartInstance
-				});
-
-				Chart.layoutService.addBox(chartInstance, chartInstance.titleBlock);
 			}
 		}
 	});

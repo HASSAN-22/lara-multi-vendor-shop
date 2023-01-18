@@ -55,7 +55,7 @@ $.extend( true, DataTable.defaults, {
 
 /* Default class modification */
 $.extend( DataTable.ext.classes, {
-	sWrapper:      "dataTables_wrapper form-inline dt-bootstrap",
+	sWrapper:      "dataTables_wrapper container-fluid dt-bootstrap",
 	sFilterInput:  "form-control input-sm",
 	sLengthSelect: "form-control input-sm",
 	sProcessing:   "dataTables_processing panel panel-default"
@@ -172,7 +172,7 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 		buttons
 	);
 
-	if ( activeEl !== undefined ) {
+	if ( activeEl ) {
 		$(host).find( '[data-dt-idx='+activeEl+']' ).focus();
 	}
 };

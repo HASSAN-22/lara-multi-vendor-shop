@@ -1,7 +1,5 @@
-<li><a><i class="fa fa-home"></i> خانه <span class="fa fa-chevron-down"></span></a>
+<li><a><i class="fa fa-home"></i> Category <span class="fa fa-chevron-down"></span></a>
     <ul class="nav child_menu">
-        <li><a href="index.html">داشبورد</a></li>
-        <li><a href="index2.html">داشبورد ۲</a></li>
-        <li><a href="index3.html">داشبورد ۳</a></li>
+        <li><a href="{{route('admin.category.index')}}">Category list</a></li>
     </ul>
 </li>

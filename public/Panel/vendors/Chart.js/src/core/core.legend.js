@@ -44,7 +44,7 @@ module.exports = function(Chart) {
 				return helpers.isArray(data.datasets) ? data.datasets.map(function(dataset, i) {
 					return {
 						text: dataset.label,
-						fillStyle: (!helpers.isArray(dataset.backgroundColor) ? dataset.backgroundColor : dataset.backgroundColor[0]),
+						fillStyle: dataset.backgroundColor,
 						hidden: !chart.isDatasetVisible(i),
 						lineCap: dataset.borderCapStyle,
 						lineDash: dataset.borderDash,
@@ -79,33 +79,32 @@ module.exports = function(Chart) {
 
 		beforeUpdate: noop,
 		update: function(maxWidth, maxHeight, margins) {
-			var me = this;
 
 			// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
-			me.beforeUpdate();
+			this.beforeUpdate();
 
 			// Absorb the master measurements
-			me.maxWidth = maxWidth;
-			me.maxHeight = maxHeight;
-			me.margins = margins;
+			this.maxWidth = maxWidth;
+			this.maxHeight = maxHeight;
+			this.margins = margins;
 
 			// Dimensions
-			me.beforeSetDimensions();
-			me.setDimensions();
-			me.afterSetDimensions();
+			this.beforeSetDimensions();
+			this.setDimensions();
+			this.afterSetDimensions();
 			// Labels
-			me.beforeBuildLabels();
-			me.buildLabels();
-			me.afterBuildLabels();
+			this.beforeBuildLabels();
+			this.buildLabels();
+			this.afterBuildLabels();
 
 			// Fit
-			me.beforeFit();
-			me.fit();
-			me.afterFit();
+			this.beforeFit();
+			this.fit();
+			this.afterFit();
 			//
-			me.afterUpdate();
+			this.afterUpdate();
 
-			return me.minSize;
+			return this.minSize;
 		},
 		afterUpdate: noop,
 
@@ -113,29 +112,28 @@ module.exports = function(Chart) {
 
 		beforeSetDimensions: noop,
 		setDimensions: function() {
-			var me = this;
 			// Set the unconstrained dimension before label rotation
-			if (me.isHorizontal()) {
+			if (this.isHorizontal()) {
 				// Reset position before calculating rotation
-				me.width = me.maxWidth;
-				me.left = 0;
-				me.right = me.width;
+				this.width = this.maxWidth;
+				this.left = 0;
+				this.right = this.width;
 			} else {
-				me.height = me.maxHeight;
+				this.height = this.maxHeight;
 
 				// Reset position before calculating rotation
-				me.top = 0;
-				me.bottom = me.height;
+				this.top = 0;
+				this.bottom = this.height;
 			}
 
 			// Reset padding
-			me.paddingLeft = 0;
-			me.paddingTop = 0;
-			me.paddingRight = 0;
-			me.paddingBottom = 0;
+			this.paddingLeft = 0;
+			this.paddingTop = 0;
+			this.paddingRight = 0;
+			this.paddingBottom = 0;
 
 			// Reset minSize
-			me.minSize = {
+			this.minSize = {
 				width: 0,
 				height: 0
 			};
@@ -146,10 +144,9 @@ module.exports = function(Chart) {
 
 		beforeBuildLabels: noop,
 		buildLabels: function() {
-			var me = this;
-			me.legendItems = me.options.labels.generateLabels.call(me, me.chart);
-			if(me.options.reverse){
-				me.legendItems.reverse();
+			this.legendItems = this.options.labels.generateLabels.call(this, this.chart);
+			if(this.options.reverse){
+				this.legendItems.reverse();
 			}
 		},
 		afterBuildLabels: noop,
@@ -158,12 +155,11 @@ module.exports = function(Chart) {
 
 		beforeFit: noop,
 		fit: function() {
-			var me = this;
-			var opts = me.options;
+			var opts = this.options;
 			var labelOpts = opts.labels;
 			var display = opts.display;
 
-			var ctx = me.ctx;
+			var ctx = this.ctx;
 
 			var globalDefault = Chart.defaults.global,
 				itemOrDefault = helpers.getValueOrDefault,
@@ -173,38 +169,37 @@ module.exports = function(Chart) {
 				labelFont = helpers.fontString(fontSize, fontStyle, fontFamily);
 
 			// Reset hit boxes
-			var hitboxes = me.legendHitBoxes = [];
+			var hitboxes = this.legendHitBoxes = [];
 
-			var minSize = me.minSize;
-			var isHorizontal = me.isHorizontal();
+			var minSize = this.minSize;
+			var isHorizontal = this.isHorizontal();
 
 			if (isHorizontal) {
-				minSize.width = me.maxWidth; // fill all the width
+				minSize.width = this.maxWidth; // fill all the width
 				minSize.height = display ? 10 : 0;
 			} else {
 				minSize.width = display ? 10 : 0;
-				minSize.height = me.maxHeight; // fill all the height
+				minSize.height = this.maxHeight; // fill all the height
 			}
 
 			// Increase sizes here
 			if (display) {
-				ctx.font = labelFont;
-
 				if (isHorizontal) {
 					// Labels
 
 					// Width of each line of legend boxes. Labels wrap onto multiple lines when there are too many to fit on one
-					var lineWidths = me.lineWidths = [0];
-					var totalHeight = me.legendItems.length ? fontSize + (labelOpts.padding) : 0;
+					var lineWidths = this.lineWidths = [0];
+					var totalHeight = this.legendItems.length ? fontSize + (labelOpts.padding) : 0;
 
 					ctx.textAlign = "left";
 					ctx.textBaseline = 'top';
+					ctx.font = labelFont;
 
-					helpers.each(me.legendItems, function(legendItem, i) {
+					helpers.each(this.legendItems, function(legendItem, i) {
 						var width = labelOpts.boxWidth + (fontSize / 2) + ctx.measureText(legendItem.text).width;
-						if (lineWidths[lineWidths.length - 1] + width + labelOpts.padding >= me.width) {
+						if (lineWidths[lineWidths.length - 1] + width + labelOpts.padding >= this.width) {
 							totalHeight += fontSize + (labelOpts.padding);
-							lineWidths[lineWidths.length] = me.left;
+							lineWidths[lineWidths.length] = this.left;
 						}
 
 						// Store the hitbox width and height here. Final position will be updated in `draw`
@@ -216,51 +211,17 @@ module.exports = function(Chart) {
 						};
 
 						lineWidths[lineWidths.length - 1] += width + labelOpts.padding;
-					});
+					}, this);
 
 					minSize.height += totalHeight;
 
 				} else {
-					var vPadding = labelOpts.padding;
-					var columnWidths = me.columnWidths = [];
-					var totalWidth = labelOpts.padding;
-					var currentColWidth = 0;
-					var currentColHeight = 0;
-					var itemHeight = fontSize + vPadding;
-
-					helpers.each(me.legendItems, function(legendItem, i) {
-						var itemWidth = labelOpts.boxWidth + (fontSize / 2) + ctx.measureText(legendItem.text).width;
-
-						// If too tall, go to new column
-						if (currentColHeight + itemHeight > minSize.height) {
-							totalWidth += currentColWidth + labelOpts.padding;
-							columnWidths.push(currentColWidth); // previous column width
-
-							currentColWidth = 0;
-							currentColHeight = 0;
-						}
-
-						// Get max width
-						currentColWidth = Math.max(currentColWidth, itemWidth);
-						currentColHeight += itemHeight;
-
-						// Store the hitbox width and height here. Final position will be updated in `draw`
-						hitboxes[i] = {
-							left: 0,
-							top: 0,
-							width: itemWidth,
-							height: fontSize
-						};
-					});
-
-					totalWidth += currentColWidth;
-					columnWidths.push(currentColWidth);
-					minSize.width += totalWidth;
+					// TODO vertical
 				}
 			}
 
-			me.width = minSize.width;
-			me.height = minSize.height;
+			this.width = minSize.width;
+			this.height = minSize.height;
 		},
 		afterFit: noop,
 
@@ -271,18 +232,20 @@ module.exports = function(Chart) {
 
 		// Actualy draw the legend on the canvas
 		draw: function() {
-			var me = this;
-			var opts = me.options;
+			var opts = this.options;
 			var labelOpts = opts.labels;
 			var globalDefault = Chart.defaults.global,
 				lineDefault = globalDefault.elements.line,
-				legendWidth = me.width,
-				legendHeight = me.height,
-				lineWidths = me.lineWidths;
+				legendWidth = this.width,
+				lineWidths = this.lineWidths;
 
 			if (opts.display) {
-				var ctx = me.ctx,
-					cursor,
+				var ctx = this.ctx,
+					cursor = {
+						x: this.left + ((legendWidth - lineWidths[0]) / 2),
+						y: this.top + labelOpts.padding,
+						line: 0
+					},
 					itemOrDefault = helpers.getValueOrDefault,
 					fontColor = itemOrDefault(labelOpts.fontColor, globalDefault.defaultFontColor),
 					fontSize = itemOrDefault(labelOpts.fontSize, globalDefault.defaultFontSize),
@@ -290,127 +253,92 @@ module.exports = function(Chart) {
 					fontFamily = itemOrDefault(labelOpts.fontFamily, globalDefault.defaultFontFamily),
 					labelFont = helpers.fontString(fontSize, fontStyle, fontFamily);
 
-				// Canvas setup
-				ctx.textAlign = "left";
-				ctx.textBaseline = 'top';
-				ctx.lineWidth = 0.5;
-				ctx.strokeStyle = fontColor; // for strikethrough effect
-				ctx.fillStyle = fontColor; // render in correct colour
-				ctx.font = labelFont;
-
-				var boxWidth = labelOpts.boxWidth,
-					hitboxes = me.legendHitBoxes;
-
-				// current position
-				var drawLegendBox = function(x, y, legendItem) {
-					// Set the ctx for the box
-					ctx.save();
-
-					ctx.fillStyle = itemOrDefault(legendItem.fillStyle, globalDefault.defaultColor);
-					ctx.lineCap = itemOrDefault(legendItem.lineCap, lineDefault.borderCapStyle);
-					ctx.lineDashOffset = itemOrDefault(legendItem.lineDashOffset, lineDefault.borderDashOffset);
-					ctx.lineJoin = itemOrDefault(legendItem.lineJoin, lineDefault.borderJoinStyle);
-					ctx.lineWidth = itemOrDefault(legendItem.lineWidth, lineDefault.borderWidth);
-					ctx.strokeStyle = itemOrDefault(legendItem.strokeStyle, globalDefault.defaultColor);
-
-					if (ctx.setLineDash) {
-						// IE 9 and 10 do not support line dash
-						ctx.setLineDash(itemOrDefault(legendItem.lineDash, lineDefault.borderDash));
-					}
-
-					// Draw the box
-					ctx.strokeRect(x, y, boxWidth, fontSize);
-					ctx.fillRect(x, y, boxWidth, fontSize);
-
-					ctx.restore();
-				};
-				var fillText = function(x, y, legendItem, textWidth) {
-					ctx.fillText(legendItem.text, boxWidth + (fontSize / 2) + x, y);
-
-					if (legendItem.hidden) {
-						// Strikethrough the text if hidden
-						ctx.beginPath();
-						ctx.lineWidth = 2;
-						ctx.moveTo(boxWidth + (fontSize / 2) + x, y + (fontSize / 2));
-						ctx.lineTo(boxWidth + (fontSize / 2) + x + textWidth, y + (fontSize / 2));
-						ctx.stroke();
-					}
-				};
-
 				// Horizontal
-				var isHorizontal = me.isHorizontal();
-				if (isHorizontal) {
-					cursor = {
-						x: me.left + ((legendWidth - lineWidths[0]) / 2),
-						y: me.top + labelOpts.padding,
-						line: 0
-					};
-				} else {
-					cursor = {
-						x: me.left + labelOpts.padding,
-						y: me.top,
-						line: 0
-					};
-				}
+				if (this.isHorizontal()) {
+					// Labels
+					ctx.textAlign = "left";
+					ctx.textBaseline = 'top';
+					ctx.lineWidth = 0.5;
+					ctx.strokeStyle = fontColor; // for strikethrough effect
+					ctx.fillStyle = fontColor; // render in correct colour
+					ctx.font = labelFont;
 
-				var itemHeight = fontSize + labelOpts.padding;
-				helpers.each(me.legendItems, function(legendItem, i) {
-					var textWidth = ctx.measureText(legendItem.text).width,
-						width = boxWidth + (fontSize / 2) + textWidth,
-						x = cursor.x,
-						y = cursor.y;
+					var boxWidth = labelOpts.boxWidth,
+						hitboxes = this.legendHitBoxes;
 
-					if (isHorizontal) {
+					helpers.each(this.legendItems, function(legendItem, i) {
+						var textWidth = ctx.measureText(legendItem.text).width,
+							width = boxWidth + (fontSize / 2) + textWidth,
+							x = cursor.x,
+							y = cursor.y;
+
 						if (x + width >= legendWidth) {
 							y = cursor.y += fontSize + (labelOpts.padding);
 							cursor.line++;
-							x = cursor.x = me.left + ((legendWidth - lineWidths[cursor.line]) / 2);
+							x = cursor.x = this.left + ((legendWidth - lineWidths[cursor.line]) / 2);
 						}
-					} else {
-						if (y + itemHeight > me.bottom) {
-							x = cursor.x = x + me.columnWidths[cursor.line] + labelOpts.padding;
-							y = cursor.y = me.top;
-							cursor.line++;
+
+						// Set the ctx for the box
+						ctx.save();
+
+						ctx.fillStyle = itemOrDefault(legendItem.fillStyle, globalDefault.defaultColor);
+						ctx.lineCap = itemOrDefault(legendItem.lineCap, lineDefault.borderCapStyle);
+						ctx.lineDashOffset = itemOrDefault(legendItem.lineDashOffset, lineDefault.borderDashOffset);
+						ctx.lineJoin = itemOrDefault(legendItem.lineJoin, lineDefault.borderJoinStyle);
+						ctx.lineWidth = itemOrDefault(legendItem.lineWidth, lineDefault.borderWidth);
+						ctx.strokeStyle = itemOrDefault(legendItem.strokeStyle, globalDefault.defaultColor);
+
+						if (ctx.setLineDash) {
+							// IE 9 and 10 do not support line dash
+							ctx.setLineDash(itemOrDefault(legendItem.lineDash, lineDefault.borderDash));
 						}
-					}
-					
 
-					drawLegendBox(x, y, legendItem);
+						// Draw the box
+						ctx.strokeRect(x, y, boxWidth, fontSize);
+						ctx.fillRect(x, y, boxWidth, fontSize);
 
-					hitboxes[i].left = x;
-					hitboxes[i].top = y;
+						ctx.restore();
 
-					// Fill the actual label
-					fillText(x, y, legendItem, textWidth);
+						hitboxes[i].left = x;
+						hitboxes[i].top = y;
 
-					if (isHorizontal) {
+						// Fill the actual label
+						ctx.fillText(legendItem.text, boxWidth + (fontSize / 2) + x, y);
+
+						if (legendItem.hidden) {
+							// Strikethrough the text if hidden
+							ctx.beginPath();
+							ctx.lineWidth = 2;
+							ctx.moveTo(boxWidth + (fontSize / 2) + x, y + (fontSize / 2));
+							ctx.lineTo(boxWidth + (fontSize / 2) + x + textWidth, y + (fontSize / 2));
+							ctx.stroke();
+						}
+
 						cursor.x += width + (labelOpts.padding);
-					} else {
-						cursor.y += itemHeight;
-					}
-					
-				});
+					}, this);
+				} else {
+
+				}
 			}
 		},
 
 		// Handle an event
 		handleEvent: function(e) {
-			var me = this;
-			var position = helpers.getRelativePosition(e, me.chart.chart),
+			var position = helpers.getRelativePosition(e, this.chart.chart),
 				x = position.x,
 				y = position.y,
-				opts = me.options;
+				opts = this.options;
 
-			if (x >= me.left && x <= me.right && y >= me.top && y <= me.bottom) {
+			if (x >= this.left && x <= this.right && y >= this.top && y <= this.bottom) {
 				// See if we are touching one of the dataset boxes
-				var lh = me.legendHitBoxes;
+				var lh = this.legendHitBoxes;
 				for (var i = 0; i < lh.length; ++i) {
 					var hitBox = lh[i];
 
 					if (x >= hitBox.left && x <= hitBox.left + hitBox.width && y >= hitBox.top && y <= hitBox.top + hitBox.height) {
 						// Touching an element
 						if (opts.onClick) {
-							opts.onClick.call(me, e, me.legendItems[i]);
+							opts.onClick.call(this, e, this.legendItems[i]);
 						}
 						break;
 					}
@@ -419,21 +347,4 @@ module.exports = function(Chart) {
 		}
 	});
 
-	// Register the legend plugin
-	Chart.plugins.register({
-		beforeInit: function(chartInstance) {
-			var opts = chartInstance.options;
-			var legendOpts = opts.legend;
-
-			if (legendOpts) {
-				chartInstance.legend = new Chart.Legend({
-					ctx: chartInstance.chart.ctx,
-					options: legendOpts,
-					chart: chartInstance
-				});
-
-				Chart.layoutService.addBox(chartInstance, chartInstance.legend);
-			}
-		}
-	});
 };

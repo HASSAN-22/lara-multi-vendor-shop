@@ -34,44 +34,6 @@
 
 })(jQuery,'smartresize');
 /**
- * Resize function without multiple trigger
- *
- * Usage:
- * $(window).smartresize(function(){
- *     // code here
- * });
- */
-(function ($, sr) {
-    // debouncing function from John Hann
-    // http://unscriptable.com/index.php/2009/03/20/debouncing-javascript-methods/
-    var debounce = function (func, threshold, execAsap) {
-        var timeout;
-
-        return function debounced() {
-            var obj = this, args = arguments;
-
-            function delayed() {
-                if (!execAsap)
-                    func.apply(obj, args);
-                timeout = null;
-            }
-
-            if (timeout)
-                clearTimeout(timeout);
-            else if (execAsap)
-                func.apply(obj, args);
-
-            timeout = setTimeout(delayed, threshold || 100);
-        };
-    };
-
-    // smartresize
-    jQuery.fn[sr] = function (fn) {
-        return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr);
-    };
-
-})(jQuery, 'smartresize');
-/**
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -87,10 +49,9 @@ var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
     $NAV_MENU = $('.nav_menu'),
     $FOOTER = $('footer');
 
-
 // Sidebar
 function init_sidebar() {
-// TODO: This is some kind of easy fix, maybe we can improve this
+    // TODO: This is some kind of easy fix, maybe we can improve this
     var setContentHeight = function () {
         // reset height
         $RIGHT_COL.css('min-height', $(window).height());
@@ -106,8 +67,12 @@ function init_sidebar() {
         $RIGHT_COL.css('min-height', contentHeight);
     };
 
+    var openUpMenu = function () {
+        $SIDEBAR_MENU.find('li').removeClass('active active-sm');
+        $SIDEBAR_MENU.find('li ul').slideUp();
+    }
+
     $SIDEBAR_MENU.find('a').on('click', function (ev) {
-        console.log('clicked - sidebar_menu');
         var $li = $(this).parent();
 
         if ($li.is('.active')) {
@@ -118,14 +83,15 @@ function init_sidebar() {
         } else {
             // prevent closing menu if we are on child menu
             if (!$li.parent().is('.child_menu')) {
-                $SIDEBAR_MENU.find('li').removeClass('active active-sm');
-                $SIDEBAR_MENU.find('li ul').slideUp();
+                openUpMenu();
             } else {
-                if ($BODY.is(".nav-sm")) {
-                    $li.parent().find("li").removeClass("active active-sm");
-                    $li.parent().find("li ul").slideUp();
+                if ($BODY.is('nav-sm')) {
+                    if (!$li.parent().is('child_menu')) {
+                        openUpMenu();
+                    }
                 }
             }
+
             $li.addClass('active');
 
             $('ul:first', $li).slideDown(function () {
@@ -134,10 +100,8 @@ function init_sidebar() {
         }
     });
 
-// toggle small or large menu
+    // toggle small or large menu
     $MENU_TOGGLE.on('click', function () {
-        console.log('clicked - menu toggle');
-
         if ($BODY.hasClass('nav-md')) {
             $SIDEBAR_MENU.find('li.active ul').hide();
             $SIDEBAR_MENU.find('li.active').addClass('active-sm').removeClass('active');
@@ -149,6 +113,8 @@ function init_sidebar() {
         $BODY.toggleClass('nav-md nav-sm');
 
         setContentHeight();
+
+        $('.dataTable').each(function () { $(this).dataTable().fnDraw(); });
     });
 
     // check active menu
@@ -172,16 +138,11 @@ function init_sidebar() {
         $('.menu_fixed').mCustomScrollbar({
             autoHideScrollbar: true,
             theme: 'minimal',
-            mouseWheel: {preventDefault: true}
+            mouseWheel: { preventDefault: true }
         });
     }
-};
+}
 // /Sidebar
-
-var randNum = function () {
-    return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
-};
-
 
 // Panel toolbox
 $(document).ready(function () {
@@ -220,9 +181,11 @@ $(document).ready(function () {
 // /Tooltip
 
 // Progressbar
-if ($(".progress .progress-bar")[0]) {
-    $('.progress .progress-bar').progressbar();
-}
+$(document).ready(function () {
+    if ($(".progress .progress-bar")[0]) {
+        $('.progress .progress-bar').progressbar();
+    }
+});
 // /Progressbar
 
 // Switchery
@@ -237,7 +200,6 @@ $(document).ready(function () {
     }
 });
 // /Switchery
-
 
 // iCheck
 $(document).ready(function () {
@@ -298,13 +260,12 @@ function countChecked() {
     if (checkCount) {
         $('.column-title').hide();
         $('.bulk-actions').show();
-        $('.action-cnt').html(checkCount + ' انتخاب شده');
+        $('.action-cnt').html(checkCount + ' Records Selected');
     } else {
         $('.column-title').show();
         $('.bulk-actions').hide();
     }
 }
-
 
 // Accordion
 $(document).ready(function () {
@@ -326,7 +287,7 @@ if (typeof NProgress != 'undefined') {
         NProgress.start();
     });
 
-    $(window).load(function () {
+    $(window).on('load', function () {
         NProgress.done();
     });
 }
@@ -372,12 +333,12 @@ function gd(year, month, day) {
 
 function init_flot_chart() {
 
-    if (typeof ($.plot) === 'undefined') {
-        return;
-    }
+    if (typeof ($.plot) === 'undefined') { return; }
 
     console.log('init_flot_chart');
-
+    var randNum = function () {
+        return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
+    };
 
     var arr_data1 = [
         [gd(2012, 1, 1), 17],
@@ -609,7 +570,7 @@ function init_flot_chart() {
 
 
         $.plot($("#chart_plot_03"), [{
-            label: "ثبت‌نام‌ها",
+            label: "Registrations",
             data: chart_plot_03_data,
             lines: {
                 fillColor: "rgba(150, 202, 89, 0.12)"
@@ -619,8 +580,7 @@ function init_flot_chart() {
             }
         }], chart_plot_03_settings);
 
-    }
-    ;
+    };
 
 }
 
@@ -629,9 +589,7 @@ function init_flot_chart() {
 
 function init_starrr() {
 
-    if (typeof (starrr) === 'undefined') {
-        return;
-    }
+    if (typeof (starrr) === 'undefined') { return; }
     console.log('init_starrr');
 
     $(".stars").starrr();
@@ -653,11 +611,9 @@ function init_starrr() {
 
 function init_JQVmap() {
 
-    //console.log('check init_JQVmap [' + typeof (VectorCanvas) + '][' + typeof (jQuery.fn.vectorMap) + ']' );
+    //console.log('check init_JQVmap [' + typeof (VectorCanvas) + '][' + typeof (jQuery.fn.vectorMap) + ']' );	
 
-    if (typeof (jQuery.fn.vectorMap) === 'undefined') {
-        return;
-    }
+    if (typeof (jQuery.fn.vectorMap) === 'undefined') { return; }
 
     console.log('init_JQVmap');
 
@@ -678,49 +634,17 @@ function init_JQVmap() {
 
     }
 
-    if ($('#iran_map').length) {
-        $('#iran_map').vectorMap({
-            map: 'iran_ir',
+    if ($('#usa_map').length) {
+
+        $('#usa_map').vectorMap({
+            map: 'usa_en',
             backgroundColor: null,
             color: '#ffffff',
             hoverOpacity: 0.7,
             selectedColor: '#666666',
             enableZoom: true,
             showTooltip: true,
-            values: {
-                "15": "16.63",
-                "16": "11.58",
-                "17": "158.97",
-                "18": "85.81",
-                "19": "1.1",
-                "20": "351.02",
-                "21": "8.83",
-                "22": "1219.72",
-                "23": "366.26",
-                "24": "52.17",
-                "25": "7.54",
-                "26": "21.73",
-                "27": "105.4",
-                "28": "3.96",
-                "29": "52.89",
-                "30": "461.33",
-                "31": "1.43",
-                "32": "6.49",
-                "33": "1.4",
-                "34": "19.18",
-                "35": "16.2",
-                "36": "12.5",
-                "37": "2023.53",
-                "38": "11.96",
-                "39": "44.84",
-                "40": "8.67",
-                "41": "1.47",
-                "42": "11.36",
-                "43": "21.88",
-                "44": "1563.66",
-                "45": "1.57",
-                "46": "2.11",
-            },
+            values: sample_data,
             scaleColors: ['#E6F2F0', '#149B7E'],
             normalizeFunction: 'polynomial'
         });
@@ -732,14 +656,12 @@ function init_JQVmap() {
 
 function init_skycons() {
 
-    if (typeof (Skycons) === 'undefined') {
-        return;
-    }
+    if (typeof (Skycons) === 'undefined') { return; }
     console.log('init_skycons');
 
     var icons = new Skycons({
-            "color": "#73879C"
-        }),
+        "color": "#73879C"
+    }),
         list = [
             "clear-day", "clear-night", "partly-cloudy-day",
             "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind",
@@ -757,9 +679,7 @@ function init_skycons() {
 
 function init_chart_doughnut() {
 
-    if (typeof (Chart) === 'undefined') {
-        return;
-    }
+    if (typeof (Chart) === 'undefined') { return; }
 
     console.log('init_chart_doughnut');
 
@@ -770,10 +690,10 @@ function init_chart_doughnut() {
             tooltipFillColor: "rgba(51, 51, 51, 0.55)",
             data: {
                 labels: [
-                    "سیمبین",
-                    "بلک بری",
-                    "دیگر",
-                    "اندروید",
+                    "Symbian",
+                    "Blackberry",
+                    "Other",
+                    "Android",
                     "IOS"
                 ],
                 datasets: [{
@@ -813,9 +733,7 @@ function init_chart_doughnut() {
 
 function init_gauge() {
 
-    if (typeof (Gauge) === 'undefined') {
-        return;
-    }
+    if (typeof (Gauge) === 'undefined') { return; }
 
     console.log('init_gauge [' + $('.gauge-chart').length + ']');
 
@@ -835,8 +753,7 @@ function init_gauge() {
         colorStart: '#1ABC9C',
         colorStop: '#1ABC9C',
         strokeColor: '#F0F3F3',
-        generateGradient: true,
-        maxValue: 80
+        generateGradient: true
     };
 
 
@@ -881,9 +798,7 @@ function init_gauge() {
 
 function init_sparklines() {
 
-    if (typeof (jQuery.fn.sparkline) === 'undefined') {
-        return;
-    }
+    if (typeof (jQuery.fn.sparkline) === 'undefined') { return; }
     console.log('init_sparklines');
 
 
@@ -913,19 +828,8 @@ function init_sparklines() {
 
     $(".sparkline_three").sparkline([2, 4, 3, 4, 5, 4, 5, 4, 3, 4, 5, 6, 7, 5, 4, 3, 5, 6], {
         type: 'line',
-        width: '100%',
-        height: '125',
-        lineColor: '#26B99A',
-        fillColor: 'rgba(223, 223, 223, 0.57)',
-        lineWidth: 2,
-        spotColor: '#26B99A',
-        minSpotColor: '#26B99A'
-    });
-
-    $(".sparkline_four").sparkline([2, 4, 3, 4, 5, 4, 5, 4, 3, 4, 5, 6, 7, 5, 4, 3, 5, 6], {
-        type: 'line',
-        height: '40',
         width: '200',
+        height: '40',
         lineColor: '#26B99A',
         fillColor: 'rgba(223, 223, 223, 0.57)',
         lineWidth: 2,
@@ -1012,278 +916,10 @@ function init_sparklines() {
 
 function init_autocomplete() {
 
-    if (typeof (autocomplete) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.autocomplete) === 'undefined') { return; }
     console.log('init_autocomplete');
 
-    var countries = {
-        AD: "Andorra",
-        A2: "Andorra Test",
-        AE: "United Arab Emirates",
-        AF: "Afghanistan",
-        AG: "Antigua and Barbuda",
-        AI: "Anguilla",
-        AL: "Albania",
-        AM: "Armenia",
-        AN: "Netherlands Antilles",
-        AO: "Angola",
-        AQ: "Antarctica",
-        AR: "Argentina",
-        AS: "American Samoa",
-        AT: "Austria",
-        AU: "Australia",
-        AW: "Aruba",
-        AX: "Åland Islands",
-        AZ: "Azerbaijan",
-        BA: "Bosnia and Herzegovina",
-        BB: "Barbados",
-        BD: "Bangladesh",
-        BE: "Belgium",
-        BF: "Burkina Faso",
-        BG: "Bulgaria",
-        BH: "Bahrain",
-        BI: "Burundi",
-        BJ: "Benin",
-        BL: "Saint Barthélemy",
-        BM: "Bermuda",
-        BN: "Brunei",
-        BO: "Bolivia",
-        BQ: "British Antarctic Territory",
-        BR: "Brazil",
-        BS: "Bahamas",
-        BT: "Bhutan",
-        BV: "Bouvet Island",
-        BW: "Botswana",
-        BY: "Belarus",
-        BZ: "Belize",
-        CA: "Canada",
-        CC: "Cocos [Keeling] Islands",
-        CD: "Congo - Kinshasa",
-        CF: "Central African Republic",
-        CG: "Congo - Brazzaville",
-        CH: "Switzerland",
-        CI: "Côte d’Ivoire",
-        CK: "Cook Islands",
-        CL: "Chile",
-        CM: "Cameroon",
-        CN: "China",
-        CO: "Colombia",
-        CR: "Costa Rica",
-        CS: "Serbia and Montenegro",
-        CT: "Canton and Enderbury Islands",
-        CU: "Cuba",
-        CV: "Cape Verde",
-        CX: "Christmas Island",
-        CY: "Cyprus",
-        CZ: "Czech Republic",
-        DD: "East Germany",
-        DE: "Germany",
-        DJ: "Djibouti",
-        DK: "Denmark",
-        DM: "Dominica",
-        DO: "Dominican Republic",
-        DZ: "Algeria",
-        EC: "Ecuador",
-        EE: "Estonia",
-        EG: "Egypt",
-        EH: "Western Sahara",
-        ER: "Eritrea",
-        ES: "Spain",
-        ET: "Ethiopia",
-        FI: "Finland",
-        FJ: "Fiji",
-        FK: "Falkland Islands",
-        FM: "Micronesia",
-        FO: "Faroe Islands",
-        FQ: "French Southern and Antarctic Territories",
-        FR: "France",
-        FX: "Metropolitan France",
-        GA: "Gabon",
-        GB: "United Kingdom",
-        GD: "Grenada",
-        GE: "Georgia",
-        GF: "French Guiana",
-        GG: "Guernsey",
-        GH: "Ghana",
-        GI: "Gibraltar",
-        GL: "Greenland",
-        GM: "Gambia",
-        GN: "Guinea",
-        GP: "Guadeloupe",
-        GQ: "Equatorial Guinea",
-        GR: "Greece",
-        GS: "South Georgia and the South Sandwich Islands",
-        GT: "Guatemala",
-        GU: "Guam",
-        GW: "Guinea-Bissau",
-        GY: "Guyana",
-        HK: "Hong Kong SAR China",
-        HM: "Heard Island and McDonald Islands",
-        HN: "Honduras",
-        HR: "Croatia",
-        HT: "Haiti",
-        HU: "Hungary",
-        ID: "Indonesia",
-        IE: "Ireland",
-        IL: "Israel",
-        IM: "Isle of Man",
-        IN: "India",
-        IO: "British Indian Ocean Territory",
-        IQ: "Iraq",
-        IR: "Iran",
-        IS: "Iceland",
-        IT: "Italy",
-        JE: "Jersey",
-        JM: "Jamaica",
-        JO: "Jordan",
-        JP: "Japan",
-        JT: "Johnston Island",
-        KE: "Kenya",
-        KG: "Kyrgyzstan",
-        KH: "Cambodia",
-        KI: "Kiribati",
-        KM: "Comoros",
-        KN: "Saint Kitts and Nevis",
-        KP: "North Korea",
-        KR: "South Korea",
-        KW: "Kuwait",
-        KY: "Cayman Islands",
-        KZ: "Kazakhstan",
-        LA: "Laos",
-        LB: "Lebanon",
-        LC: "Saint Lucia",
-        LI: "Liechtenstein",
-        LK: "Sri Lanka",
-        LR: "Liberia",
-        LS: "Lesotho",
-        LT: "Lithuania",
-        LU: "Luxembourg",
-        LV: "Latvia",
-        LY: "Libya",
-        MA: "Morocco",
-        MC: "Monaco",
-        MD: "Moldova",
-        ME: "Montenegro",
-        MF: "Saint Martin",
-        MG: "Madagascar",
-        MH: "Marshall Islands",
-        MI: "Midway Islands",
-        MK: "Macedonia",
-        ML: "Mali",
-        MM: "Myanmar [Burma]",
-        MN: "Mongolia",
-        MO: "Macau SAR China",
-        MP: "Northern Mariana Islands",
-        MQ: "Martinique",
-        MR: "Mauritania",
-        MS: "Montserrat",
-        MT: "Malta",
-        MU: "Mauritius",
-        MV: "Maldives",
-        MW: "Malawi",
-        MX: "Mexico",
-        MY: "Malaysia",
-        MZ: "Mozambique",
-        NA: "Namibia",
-        NC: "New Caledonia",
-        NE: "Niger",
-        NF: "Norfolk Island",
-        NG: "Nigeria",
-        NI: "Nicaragua",
-        NL: "Netherlands",
-        NO: "Norway",
-        NP: "Nepal",
-        NQ: "Dronning Maud Land",
-        NR: "Nauru",
-        NT: "Neutral Zone",
-        NU: "Niue",
-        NZ: "New Zealand",
-        OM: "Oman",
-        PA: "Panama",
-        PC: "Pacific Islands Trust Territory",
-        PE: "Peru",
-        PF: "French Polynesia",
-        PG: "Papua New Guinea",
-        PH: "Philippines",
-        PK: "Pakistan",
-        PL: "Poland",
-        PM: "Saint Pierre and Miquelon",
-        PN: "Pitcairn Islands",
-        PR: "Puerto Rico",
-        PS: "Palestinian Territories",
-        PT: "Portugal",
-        PU: "U.S. Miscellaneous Pacific Islands",
-        PW: "Palau",
-        PY: "Paraguay",
-        PZ: "Panama Canal Zone",
-        QA: "Qatar",
-        RE: "Réunion",
-        RO: "Romania",
-        RS: "Serbia",
-        RU: "Russia",
-        RW: "Rwanda",
-        SA: "Saudi Arabia",
-        SB: "Solomon Islands",
-        SC: "Seychelles",
-        SD: "Sudan",
-        SE: "Sweden",
-        SG: "Singapore",
-        SH: "Saint Helena",
-        SI: "Slovenia",
-        SJ: "Svalbard and Jan Mayen",
-        SK: "Slovakia",
-        SL: "Sierra Leone",
-        SM: "San Marino",
-        SN: "Senegal",
-        SO: "Somalia",
-        SR: "Suriname",
-        ST: "São Tomé and Príncipe",
-        SU: "Union of Soviet Socialist Republics",
-        SV: "El Salvador",
-        SY: "Syria",
-        SZ: "Swaziland",
-        TC: "Turks and Caicos Islands",
-        TD: "Chad",
-        TF: "French Southern Territories",
-        TG: "Togo",
-        TH: "Thailand",
-        TJ: "Tajikistan",
-        TK: "Tokelau",
-        TL: "Timor-Leste",
-        TM: "Turkmenistan",
-        TN: "Tunisia",
-        TO: "Tonga",
-        TR: "Turkey",
-        TT: "Trinidad and Tobago",
-        TV: "Tuvalu",
-        TW: "Taiwan",
-        TZ: "Tanzania",
-        UA: "Ukraine",
-        UG: "Uganda",
-        UM: "U.S. Minor Outlying Islands",
-        US: "United States",
-        UY: "Uruguay",
-        UZ: "Uzbekistan",
-        VA: "Vatican City",
-        VC: "Saint Vincent and the Grenadines",
-        VD: "North Vietnam",
-        VE: "Venezuela",
-        VG: "British Virgin Islands",
-        VI: "U.S. Virgin Islands",
-        VN: "Vietnam",
-        VU: "Vanuatu",
-        WF: "Wallis and Futuna",
-        WK: "Wake Island",
-        WS: "Samoa",
-        YD: "People's Democratic Republic of Yemen",
-        YE: "Yemen",
-        YT: "Mayotte",
-        ZA: "South Africa",
-        ZM: "Zambia",
-        ZW: "Zimbabwe",
-        ZZ: "Unknown or Invalid Region"
-    };
+    var countries = { AD: "Andorra", A2: "Andorra Test", AE: "United Arab Emirates", AF: "Afghanistan", AG: "Antigua and Barbuda", AI: "Anguilla", AL: "Albania", AM: "Armenia", AN: "Netherlands Antilles", AO: "Angola", AQ: "Antarctica", AR: "Argentina", AS: "American Samoa", AT: "Austria", AU: "Australia", AW: "Aruba", AX: "Åland Islands", AZ: "Azerbaijan", BA: "Bosnia and Herzegovina", BB: "Barbados", BD: "Bangladesh", BE: "Belgium", BF: "Burkina Faso", BG: "Bulgaria", BH: "Bahrain", BI: "Burundi", BJ: "Benin", BL: "Saint Barthélemy", BM: "Bermuda", BN: "Brunei", BO: "Bolivia", BQ: "British Antarctic Territory", BR: "Brazil", BS: "Bahamas", BT: "Bhutan", BV: "Bouvet Island", BW: "Botswana", BY: "Belarus", BZ: "Belize", CA: "Canada", CC: "Cocos [Keeling] Islands", CD: "Congo - Kinshasa", CF: "Central African Republic", CG: "Congo - Brazzaville", CH: "Switzerland", CI: "Côte d’Ivoire", CK: "Cook Islands", CL: "Chile", CM: "Cameroon", CN: "China", CO: "Colombia", CR: "Costa Rica", CS: "Serbia and Montenegro", CT: "Canton and Enderbury Islands", CU: "Cuba", CV: "Cape Verde", CX: "Christmas Island", CY: "Cyprus", CZ: "Czech Republic", DD: "East Germany", DE: "Germany", DJ: "Djibouti", DK: "Denmark", DM: "Dominica", DO: "Dominican Republic", DZ: "Algeria", EC: "Ecuador", EE: "Estonia", EG: "Egypt", EH: "Western Sahara", ER: "Eritrea", ES: "Spain", ET: "Ethiopia", FI: "Finland", FJ: "Fiji", FK: "Falkland Islands", FM: "Micronesia", FO: "Faroe Islands", FQ: "French Southern and Antarctic Territories", FR: "France", FX: "Metropolitan France", GA: "Gabon", GB: "United Kingdom", GD: "Grenada", GE: "Georgia", GF: "French Guiana", GG: "Guernsey", GH: "Ghana", GI: "Gibraltar", GL: "Greenland", GM: "Gambia", GN: "Guinea", GP: "Guadeloupe", GQ: "Equatorial Guinea", GR: "Greece", GS: "South Georgia and the South Sandwich Islands", GT: "Guatemala", GU: "Guam", GW: "Guinea-Bissau", GY: "Guyana", HK: "Hong Kong SAR China", HM: "Heard Island and McDonald Islands", HN: "Honduras", HR: "Croatia", HT: "Haiti", HU: "Hungary", ID: "Indonesia", IE: "Ireland", IL: "Israel", IM: "Isle of Man", IN: "India", IO: "British Indian Ocean Territory", IQ: "Iraq", IR: "Iran", IS: "Iceland", IT: "Italy", JE: "Jersey", JM: "Jamaica", JO: "Jordan", JP: "Japan", JT: "Johnston Island", KE: "Kenya", KG: "Kyrgyzstan", KH: "Cambodia", KI: "Kiribati", KM: "Comoros", KN: "Saint Kitts and Nevis", KP: "North Korea", KR: "South Korea", KW: "Kuwait", KY: "Cayman Islands", KZ: "Kazakhstan", LA: "Laos", LB: "Lebanon", LC: "Saint Lucia", LI: "Liechtenstein", LK: "Sri Lanka", LR: "Liberia", LS: "Lesotho", LT: "Lithuania", LU: "Luxembourg", LV: "Latvia", LY: "Libya", MA: "Morocco", MC: "Monaco", MD: "Moldova", ME: "Montenegro", MF: "Saint Martin", MG: "Madagascar", MH: "Marshall Islands", MI: "Midway Islands", MK: "Macedonia", ML: "Mali", MM: "Myanmar [Burma]", MN: "Mongolia", MO: "Macau SAR China", MP: "Northern Mariana Islands", MQ: "Martinique", MR: "Mauritania", MS: "Montserrat", MT: "Malta", MU: "Mauritius", MV: "Maldives", MW: "Malawi", MX: "Mexico", MY: "Malaysia", MZ: "Mozambique", NA: "Namibia", NC: "New Caledonia", NE: "Niger", NF: "Norfolk Island", NG: "Nigeria", NI: "Nicaragua", NL: "Netherlands", NO: "Norway", NP: "Nepal", NQ: "Dronning Maud Land", NR: "Nauru", NT: "Neutral Zone", NU: "Niue", NZ: "New Zealand", OM: "Oman", PA: "Panama", PC: "Pacific Islands Trust Territory", PE: "Peru", PF: "French Polynesia", PG: "Papua New Guinea", PH: "Philippines", PK: "Pakistan", PL: "Poland", PM: "Saint Pierre and Miquelon", PN: "Pitcairn Islands", PR: "Puerto Rico", PS: "Palestinian Territories", PT: "Portugal", PU: "U.S. Miscellaneous Pacific Islands", PW: "Palau", PY: "Paraguay", PZ: "Panama Canal Zone", QA: "Qatar", RE: "Réunion", RO: "Romania", RS: "Serbia", RU: "Russia", RW: "Rwanda", SA: "Saudi Arabia", SB: "Solomon Islands", SC: "Seychelles", SD: "Sudan", SE: "Sweden", SG: "Singapore", SH: "Saint Helena", SI: "Slovenia", SJ: "Svalbard and Jan Mayen", SK: "Slovakia", SL: "Sierra Leone", SM: "San Marino", SN: "Senegal", SO: "Somalia", SR: "Suriname", ST: "São Tomé and Príncipe", SU: "Union of Soviet Socialist Republics", SV: "El Salvador", SY: "Syria", SZ: "Swaziland", TC: "Turks and Caicos Islands", TD: "Chad", TF: "French Southern Territories", TG: "Togo", TH: "Thailand", TJ: "Tajikistan", TK: "Tokelau", TL: "Timor-Leste", TM: "Turkmenistan", TN: "Tunisia", TO: "Tonga", TR: "Turkey", TT: "Trinidad and Tobago", TV: "Tuvalu", TW: "Taiwan", TZ: "Tanzania", UA: "Ukraine", UG: "Uganda", UM: "U.S. Minor Outlying Islands", US: "United States", UY: "Uruguay", UZ: "Uzbekistan", VA: "Vatican City", VC: "Saint Vincent and the Grenadines", VD: "North Vietnam", VE: "Venezuela", VG: "British Virgin Islands", VI: "U.S. Virgin Islands", VN: "Vietnam", VU: "Vanuatu", WF: "Wallis and Futuna", WK: "Wake Island", WS: "Samoa", YD: "People's Democratic Republic of Yemen", YE: "Yemen", YT: "Mayotte", ZA: "South Africa", ZM: "Zambia", ZW: "Zimbabwe", ZZ: "Unknown or Invalid Region" };
 
     var countriesArray = $.map(countries, function (value, key) {
         return {
@@ -1315,9 +951,7 @@ function init_autosize() {
 
 function init_parsley() {
 
-    if (typeof (parsley) === 'undefined') {
-        return;
-    }
+    if (typeof (parsley) === 'undefined') { return; }
     console.log('init_parsley');
 
     $/*.listen*/('parsley:field:validate', function () {
@@ -1356,8 +990,7 @@ function init_parsley() {
 
     try {
         hljs.initHighlightingOnLoad();
-    } catch (err) {
-    }
+    } catch (err) { }
 
 };
 
@@ -1393,9 +1026,7 @@ function init_TagsInput() {
 
 function init_select2() {
 
-    if (typeof (select2) === 'undefined') {
-        return;
-    }
+    if (typeof (select2) === 'undefined') { return; }
     console.log('init_toolbox');
 
     $(".select2_single").select2({
@@ -1415,16 +1046,14 @@ function init_select2() {
 
 function init_wysiwyg() {
 
-    if (typeof ($.fn.wysiwyg) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.wysiwyg) === 'undefined') { return; }
     console.log('init_wysiwyg');
 
     function init_ToolbarBootstrapBindings() {
         var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier',
-                'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
-                'Times New Roman', 'Verdana'
-            ],
+            'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
+            'Times New Roman', 'Verdana'
+        ],
             fontTarget = $('[title=Font]').siblings('.dropdown-menu');
         $.each(fonts, function (idx, fontName) {
             fontTarget.append($('<li><a data-edit="fontName ' + fontName + '" style="font-family:\'' + fontName + '\'">' + fontName + '</a></li>'));
@@ -1492,9 +1121,7 @@ function init_wysiwyg() {
 function init_cropper() {
 
 
-    if (typeof ($.fn.cropper) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.cropper) === 'undefined') { return; }
     console.log('init_cropper');
 
     var $image = $('#image');
@@ -1728,9 +1355,7 @@ function init_cropper() {
 
 function init_knob() {
 
-    if (typeof ($.fn.knob) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.knob) === 'undefined') { return; }
     console.log('init_knob');
 
     $(".knob").knob({
@@ -1745,8 +1370,8 @@ function init_knob() {
             console.log("cancel : ", this);
         },
         /*format : function (value) {
-				   return value + '%';
-				   },*/
+         return value + '%';
+         },*/
         draw: function () {
 
             // "tron" case
@@ -1836,9 +1461,7 @@ function init_knob() {
 
 function init_InputMask() {
 
-    if (typeof ($.fn.inputmask) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.inputmask) === 'undefined') { return; }
     console.log('init_InputMask');
 
     $(":input").inputmask();
@@ -1849,9 +1472,7 @@ function init_InputMask() {
 
 function init_ColorPicker() {
 
-    if (typeof ($.fn.colorpicker) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.colorpicker) === 'undefined') { return; }
     console.log('init_ColorPicker');
 
     $('.demo1').colorpicker();
@@ -1875,9 +1496,7 @@ function init_ColorPicker() {
 
 function init_IonRangeSlider() {
 
-    if (typeof ($.fn.ionRangeSlider) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.ionRangeSlider) === 'undefined') { return; }
     console.log('init_IonRangeSlider');
 
     $("#range_27").ionRangeSlider({
@@ -1948,9 +1567,7 @@ function init_IonRangeSlider() {
 
 function init_daterangepicker() {
 
-    if (typeof ($.fn.daterangepicker) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.daterangepicker) === 'undefined') { return; }
     console.log('init_daterangepicker');
 
     var cb = function (start, end, label) {
@@ -1972,27 +1589,27 @@ function init_daterangepicker() {
         timePickerIncrement: 1,
         timePicker12Hour: true,
         ranges: {
-            'امروز': [moment(), moment()],
-            'دیروز': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            '۷ روز قبل': [moment().subtract(6, 'days'), moment()],
-            '۳۰ روز قبل': [moment().subtract(29, 'days'), moment()],
-            'این ماه': [moment().startOf('month'), moment().endOf('month')],
-            'ماه قبل': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         },
-        opens: 'right',
+        opens: 'left',
         buttonClasses: ['btn btn-default'],
         applyClass: 'btn-small btn-primary',
         cancelClass: 'btn-small',
         format: 'MM/DD/YYYY',
         separator: ' to ',
         locale: {
-            applyLabel: 'ارسال',
-            cancelLabel: 'پاک کردن',
-            fromLabel: 'از',
-            toLabel: 'به',
-            customRangeLabel: 'شخصی شده',
-            daysOfWeek: 'ی_د_س_چ_پ_ج_ش'.split('_'),
-            monthNames: ('ژانویه_فوریه_مارس_آوریل_مه_ژوئن_ژوئیه_اوت_سپتامبر_اکتبر_نوامبر_دسامبر').split('_'),
+            applyLabel: 'Submit',
+            cancelLabel: 'Clear',
+            fromLabel: 'From',
+            toLabel: 'To',
+            customRangeLabel: 'Custom',
+            daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             firstDay: 1
         }
     };
@@ -2025,9 +1642,7 @@ function init_daterangepicker() {
 
 function init_daterangepicker_right() {
 
-    if (typeof ($.fn.daterangepicker) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.daterangepicker) === 'undefined') { return; }
     console.log('init_daterangepicker_right');
 
     var cb = function (start, end, label) {
@@ -2049,12 +1664,12 @@ function init_daterangepicker_right() {
         timePickerIncrement: 1,
         timePicker12Hour: true,
         ranges: {
-            'امروز': [moment(), moment()],
-            'دیروز': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            '۷ روز پیش': [moment().subtract(6, 'days'), moment()],
-            '۳۰ روز پیش': [moment().subtract(29, 'days'), moment()],
-            'این ماه': [moment().startOf('month'), moment().endOf('month')],
-            'ماه قبل': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         },
         opens: 'right',
         buttonClasses: ['btn btn-default'],
@@ -2063,13 +1678,13 @@ function init_daterangepicker_right() {
         format: 'MM/DD/YYYY',
         separator: ' to ',
         locale: {
-            applyLabel: 'ارسال',
-            cancelLabel: 'پاک کردن',
-            fromLabel: 'از',
-            toLabel: 'به',
-            customRangeLabel: 'شخصی شده',
-            daysOfWeek: 'ی_د_س_چ_پ_ج_ش'.split('_'),
-            monthNames: ('ژانویه_فوریه_مارس_آوریل_مه_ژوئن_ژوئیه_اوت_سپتامبر_اکتبر_نوامبر_دسامبر').split('_'),
+            applyLabel: 'Submit',
+            cancelLabel: 'Clear',
+            fromLabel: 'From',
+            toLabel: 'To',
+            customRangeLabel: 'Custom',
+            daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             firstDay: 1
         }
     };
@@ -2107,9 +1722,7 @@ function init_daterangepicker_right() {
 
 function init_daterangepicker_single_call() {
 
-    if (typeof ($.fn.daterangepicker) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.daterangepicker) === 'undefined') { return; }
     console.log('init_daterangepicker_single_call');
 
     $('#single_cal1').daterangepicker({
@@ -2143,9 +1756,7 @@ function init_daterangepicker_single_call() {
 
 function init_daterangepicker_reservation() {
 
-    if (typeof ($.fn.daterangepicker) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.daterangepicker) === 'undefined') { return; }
     console.log('init_daterangepicker_reservation');
 
     $('#reservation').daterangepicker(null, function (start, end, label) {
@@ -2156,15 +1767,7 @@ function init_daterangepicker_reservation() {
         timePicker: true,
         timePickerIncrement: 30,
         locale: {
-            format: 'MM/DD/YYYY h:mm A',
-            applyLabel: 'ارسال',
-            cancelLabel: 'پاک کردن',
-            fromLabel: 'از',
-            toLabel: 'به',
-            customRangeLabel: 'شخصی شده',
-            daysOfWeek: 'ی_د_س_چ_پ_ج_ش'.split('_'),
-            monthNames: ('ژانویه_فوریه_مارس_آوریل_مه_ژوئن_ژوئیه_اوت_سپتامبر_اکتبر_نوامبر_دسامبر').split('_'),
-            firstDay: 1
+            format: 'MM/DD/YYYY h:mm A'
         }
     });
 
@@ -2173,22 +1776,14 @@ function init_daterangepicker_reservation() {
 /* SMART WIZARD */
 
 function init_SmartWizard() {
-    // TODO: Fix buttons order
-    if (typeof ($.fn.smartWizard) === 'undefined') {
-        return;
-    }
+
+    if (typeof ($.fn.smartWizard) === 'undefined') { return; }
     console.log('init_SmartWizard');
-    $('#wizard').smartWizard({
-        labelNext: 'بعدی', // label for Next button
-        labelPrevious: 'قبلی', // label for Previous button
-        labelFinish: 'پایان',  // label for Finish button
-    });
+
+    $('#wizard').smartWizard();
 
     $('#wizard_verticle').smartWizard({
-        transitionEffect: 'slide',
-        labelNext: 'بعدی', // label for Next button
-        labelPrevious: 'قبلی', // label for Previous button
-        labelFinish: 'پایان',  // label for Finish button,
+        transitionEffect: 'slide'
     });
 
     $('.buttonNext').addClass('btn btn-success');
@@ -2202,30 +1797,11 @@ function init_SmartWizard() {
 
 function init_validator() {
 
-    if (typeof (validator) === 'undefined') {
-        return;
-    }
+    if (typeof (validator) === 'undefined') { return; }
     console.log('init_validator');
 
     // initialize the validator function
-    validator.message.invalid = 'ورودی مورد انتظار نیست';
-    validator.message.short = 'ورودی کوتاه است';
-    validator.message.long = 'ورودی بلند است';
-    validator.message.checked = 'باید تایید شود';
-    validator.message.empty = 'لطفا چیزی را اینجا بنویسید';
-    validator.message.select = 'لطفا یک گزینه را انتخاب کنید';
-    validator.message.number_min = 'خیلی کم';
-    validator.message.number_max = 'خیلی زیاد';
-    validator.message.url = 'URL نا معتبر';
-    validator.message.number = 'عدد نمی‌باشد';
-    validator.message.email = 'آدرس ایمیل نا معتبر است.';
-    validator.message.email_repeat = 'تکرار ایمیل با ایمیل مطابقت ندارد';
-    validator.message.date = 'تاریخ نامعتبر';
-    validator.message.time = 'زمان نامعتبر';
-    validator.message.password_repeat = 'تکرار رمزعبور با رمزعبور مطابقت ندارد';
-    validator.message.no_match = 'مطابقت ندارد';
-    validator.message.complete = 'ورودی کامل نیست';
-
+    validator.message.date = 'not a real date';
 
     // validate a field on "blur" event, a 'select' on 'change' event & a '.reuired' classed multifield on 'keyup':
     $('form')
@@ -2258,33 +1834,8 @@ function init_validator() {
 
 function init_PNotify() {
 
-    if (typeof (PNotify) === 'undefined') {
-        return;
-    }
+    if (typeof (PNotify) === 'undefined') { return; }
     console.log('init_PNotify');
-
-    new PNotify({
-        title: "PNotify",
-        type: "info",
-        text: "خوش آمدی. سعی کنید از من دور شوید شما می توانید همه چیز را در پشت من کلیک کنید، زیرا من غیر مسدود شده هستم.",
-        nonblock: {
-            nonblock: true
-        },
-        addclass: 'dark',
-        styling: 'bootstrap3',
-        hide: false,
-        before_close: function (PNotify) {
-            PNotify.update({
-                title: PNotify.options.title + " - Enjoy your Stay",
-                before_close: null
-            });
-
-            PNotify.queueRemove();
-
-            return false;
-        }
-    });
-
 };
 
 
@@ -2293,25 +1844,8 @@ function init_PNotify() {
 function init_CustomNotification() {
 
     console.log('run_customtabs');
-    CustomTabs = function (options) {
-        $('.tabbed_notifications > div').hide();
-        $('.tabbed_notifications > div:first-of-type').show();
-        $('#custom_notifications').removeClass('dsp_none');
-        $('.notifications a').click(function (e) {
-            e.preventDefault();
-            var $this = $(this),
-                tabbed_notifications = '#' + $this.parents('.notifications').data('tabbed_notifications'),
-                others = $this.closest('li').siblings().children('a'),
-                target = $this.attr('href');
-            others.removeClass('active');
-            $this.addClass('active');
-            $(tabbed_notifications).children('div').hide();
-            $(target).show();
-        });
-    };
-    if (typeof (CustomTabs) === 'undefined') {
-        return;
-    }
+
+    if (typeof (CustomTabs) === 'undefined') { return; }
     console.log('init_CustomTabs');
 
     var cnt = 10;
@@ -2328,6 +1862,23 @@ function init_CustomNotification() {
             cnt++;
             CustomTabs(options);
         }
+    };
+
+    CustomTabs = function (options) {
+        $('.tabbed_notifications > div').hide();
+        $('.tabbed_notifications > div:first-of-type').show();
+        $('#custom_notifications').removeClass('dsp_none');
+        $('.notifications a').click(function (e) {
+            e.preventDefault();
+            var $this = $(this),
+                tabbed_notifications = '#' + $this.parents('.notifications').data('tabbed_notifications'),
+                others = $this.closest('li').siblings().children('a'),
+                target = $this.attr('href');
+            others.removeClass('active');
+            $this.addClass('active');
+            $(tabbed_notifications).children('div').hide();
+            $(target).show();
+        });
     };
 
     CustomTabs();
@@ -2349,9 +1900,7 @@ function init_CustomNotification() {
 
 function init_EasyPieChart() {
 
-    if (typeof ($.fn.easyPieChart) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.easyPieChart) === 'undefined') { return; }
     console.log('init_EasyPieChart');
 
     $('.chart').easyPieChart({
@@ -2411,9 +1960,7 @@ function init_charts() {
 
     console.log('run_charts  typeof [' + typeof (Chart) + ']');
 
-    if (typeof (Chart) === 'undefined') {
-        return;
-    }
+    if (typeof (Chart) === 'undefined') { return; }
 
     console.log('init_charts');
 
@@ -2423,12 +1970,13 @@ function init_charts() {
     };
 
 
+
     if ($('#canvas_line').length) {
 
         var canvas_line_00 = new Chart(document.getElementById("canvas_line"), {
             type: 'line',
             data: {
-                labels: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر"],
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
                 datasets: [{
                     label: "My First dataset",
                     backgroundColor: "rgba(38, 185, 154, 0.31)",
@@ -2461,7 +2009,7 @@ function init_charts() {
         var canvas_line_01 = new Chart(document.getElementById("canvas_line1"), {
             type: 'line',
             data: {
-                labels: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر"],
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
                 datasets: [{
                     label: "My First dataset",
                     backgroundColor: "rgba(38, 185, 154, 0.31)",
@@ -2494,7 +2042,7 @@ function init_charts() {
         var canvas_line_02 = new Chart(document.getElementById("canvas_line2"), {
             type: 'line',
             data: {
-                labels: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر"],
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
                 datasets: [{
                     label: "My First dataset",
                     backgroundColor: "rgba(38, 185, 154, 0.31)",
@@ -2527,7 +2075,7 @@ function init_charts() {
         var canvas_line_03 = new Chart(document.getElementById("canvas_line3"), {
             type: 'line',
             data: {
-                labels: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر"],
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
                 datasets: [{
                     label: "My First dataset",
                     backgroundColor: "rgba(38, 185, 154, 0.31)",
@@ -2560,7 +2108,7 @@ function init_charts() {
         var canvas_line_04 = new Chart(document.getElementById("canvas_line4"), {
             type: 'line',
             data: {
-                labels: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر"],
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
                 datasets: [{
                     label: "My First dataset",
                     backgroundColor: "rgba(38, 185, 154, 0.31)",
@@ -2596,7 +2144,7 @@ function init_charts() {
         var lineChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر"],
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
                 datasets: [{
                     label: "My First dataset",
                     backgroundColor: "rgba(38, 185, 154, 0.31)",
@@ -2631,7 +2179,7 @@ function init_charts() {
         var mybarChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر"],
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
                 datasets: [{
                     label: '# of Votes',
                     backgroundColor: "#26B99A",
@@ -2664,11 +2212,11 @@ function init_charts() {
         var ctx = document.getElementById("canvasDoughnut");
         var data = {
             labels: [
-                "خاکستری تیر",
-                "رنگ بنفش",
-                "رنگ خاکستری",
-                "رنگ سبز",
-                "رنگ آبی"
+                "Dark Grey",
+                "Purple Color",
+                "Gray Color",
+                "Green Color",
+                "Blue Color"
             ],
             datasets: [{
                 data: [120, 50, 140, 180, 100],
@@ -2704,7 +2252,7 @@ function init_charts() {
 
         var ctx = document.getElementById("canvasRadar");
         var data = {
-            labels: ["خوردن", "نوشیدن", "خوابیدن", "طراحی کردن", "کد زدن", "دوچرخه سواری", "دویدن"],
+            labels: ["Eating", "Drinking", "Sleeping", "Designing", "Coding", "Cycling", "Running"],
             datasets: [{
                 label: "My First dataset",
                 backgroundColor: "rgba(3, 88, 106, 0.2)",
@@ -2751,11 +2299,11 @@ function init_charts() {
                 label: 'My dataset' // for legend
             }],
             labels: [
-                "خاکستری تیر",
-                "بنفش",
-                "خاکستری",
-                "سبز",
-                "آبی"
+                "Dark Gray",
+                "Purple",
+                "Gray",
+                "Green",
+                "Blue"
             ]
         };
 
@@ -2788,11 +2336,11 @@ function init_charts() {
                 label: 'My dataset'
             }],
             labels: [
-                "خاکستری تیر",
-                "بنفش",
-                "خاکستری",
-                "سبز",
-                "آبی"
+                "Dark Gray",
+                "Purple",
+                "Gray",
+                "Green",
+                "Blue"
             ]
         };
 
@@ -2815,9 +2363,7 @@ function init_charts() {
 
 function init_compose() {
 
-    if (typeof ($.fn.slideToggle) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.slideToggle) === 'undefined') { return; }
     console.log('init_compose');
 
     $('#compose, .compose-close').click(function () {
@@ -2830,10 +2376,9 @@ function init_compose() {
 
 function init_calendar() {
 
-    if (typeof ($.fn.fullCalendar) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.fullCalendar) === 'undefined') { return; }
     console.log('init_calendar');
+
     var date = new Date(),
         d = date.getDate(),
         m = date.getMonth(),
@@ -2843,10 +2388,9 @@ function init_calendar() {
 
     var calendar = $('#calendar').fullCalendar({
         header: {
-            right: 'prev,next today',
+            left: 'prev,next today',
             center: 'title',
-            left: 'month,agendaWeek,agendaDay,listMonth',
-            isRTL: true
+            right: 'month,agendaWeek,agendaDay,listMonth'
         },
         selectable: true,
         selectHelper: true,
@@ -2866,12 +2410,11 @@ function init_calendar() {
 
                 if (title) {
                     calendar.fullCalendar('renderEvent', {
-                            title: title,
-                            start: started,
-                            end: end,
-                            allDay: allDay,
-                            isRTL: true
-                        },
+                        title: title,
+                        start: started,
+                        end: end,
+                        allDay: allDay
+                    },
                         true // make the event "stick"
                     );
                 }
@@ -2902,28 +2445,28 @@ function init_calendar() {
         },
         editable: true,
         events: [{
-            title: 'تمام روز رویداد',
+            title: 'All Day Event',
             start: new Date(y, m, 1)
         }, {
-            title: 'رویداد طولانی',
+            title: 'Long Event',
             start: new Date(y, m, d - 5),
             end: new Date(y, m, d - 2)
         }, {
-            title: 'ملاقات',
+            title: 'Meeting',
             start: new Date(y, m, d, 10, 30),
             allDay: false
         }, {
-            title: 'نهار',
+            title: 'Lunch',
             start: new Date(y, m, d + 14, 12, 0),
             end: new Date(y, m, d, 14, 0),
             allDay: false
         }, {
-            title: 'مهمونی تولد',
+            title: 'Birthday Party',
             start: new Date(y, m, d + 1, 19, 0),
             end: new Date(y, m, d + 1, 22, 30),
             allDay: false
         }, {
-            title: 'کلیک برای گوگل',
+            title: 'Click for Google',
             start: new Date(y, m, 28),
             end: new Date(y, m, 29),
             url: 'http://google.com/'
@@ -2938,42 +2481,32 @@ function init_DataTables() {
 
     console.log('run_datatables');
 
-    if (typeof ($.fn.DataTable) === 'undefined') {
-        return;
-    }
+    if (typeof ($.fn.DataTable) === 'undefined') { return; }
     console.log('init_DataTables');
 
     var handleDataTableButtons = function () {
         if ($("#datatable-buttons").length) {
             $("#datatable-buttons").DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Persian.json"
-                },
-                dom: "Bfrtip",
+                dom: "Blfrtip",
                 buttons: [
                     {
                         extend: "copy",
-                        text: "کپی",
                         className: "btn-sm"
                     },
                     {
                         extend: "csv",
-                        text: "فایل CSV",
                         className: "btn-sm"
                     },
                     {
                         extend: "excel",
-                        text: "اکسل",
                         className: "btn-sm"
                     },
                     {
                         extend: "pdfHtml5",
-                        text: "فایل PDF",
                         className: "btn-sm"
                     },
                     {
                         extend: "print",
-                        text: "چاپ",
                         className: "btn-sm"
                     },
                 ],
@@ -2991,29 +2524,15 @@ function init_DataTables() {
         };
     }();
 
-    $('#datatable').dataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Persian.json"
-        }
-    });
+    $('#datatable').dataTable();
 
     $('#datatable-keytable').DataTable({
-        keys: true,
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Persian.json"
-        }
+        keys: true
     });
 
-    $('#datatable-responsive').DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Persian.json"
-        }
-    });
+    $('#datatable-responsive').DataTable();
 
     $('#datatable-scroller').DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Persian.json"
-        },
         ajax: "js/datatables/json/scroller-demo.json",
         deferRender: true,
         scrollY: 380,
@@ -3022,21 +2541,15 @@ function init_DataTables() {
     });
 
     $('#datatable-fixed-header').DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Persian.json"
-        },
         fixedHeader: true
     });
 
     var $datatable = $('#datatable-checkbox');
 
     $datatable.dataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Persian.json"
-        },
         'order': [[1, 'asc']],
         'columnDefs': [
-            {orderable: false, targets: [0]}
+            { orderable: false, targets: [0] }
         ]
     });
     $datatable.on('draw.dt', function () {
@@ -3053,9 +2566,7 @@ function init_DataTables() {
 
 function init_morris_charts() {
 
-    if (typeof (Morris) === 'undefined') {
-        return;
-    }
+    if (typeof (Morris) === 'undefined') { return; }
     console.log('init_morris_charts');
 
     if ($('#graph_bar').length) {
@@ -3063,22 +2574,20 @@ function init_morris_charts() {
         Morris.Bar({
             element: 'graph_bar',
             data: [
-                {device: 'دیگر', geekbench: 1371},
-                {device: 'آیفون 6S پلاس', geekbench: 1471},
-                {device: 'آیفون 6S', geekbench: 2371},
-                {device: 'آیفون 6 پلاس', geekbench: 1144},
-                {device: 'آیفون 6', geekbench: 2154},
-                {device: 'آیفون 5S', geekbench: 655},
-                {device: 'آیفون 5', geekbench: 1571},
-                {device: 'آیفون 3GS', geekbench: 275},
-                {device: 'آیفون 4S', geekbench: 655},
-                {device: 'آیفون 4', geekbench: 380},
-
-
+                { device: 'iPhone 4', geekbench: 380 },
+                { device: 'iPhone 4S', geekbench: 655 },
+                { device: 'iPhone 3GS', geekbench: 275 },
+                { device: 'iPhone 5', geekbench: 1571 },
+                { device: 'iPhone 5S', geekbench: 655 },
+                { device: 'iPhone 6', geekbench: 2154 },
+                { device: 'iPhone 6 Plus', geekbench: 1144 },
+                { device: 'iPhone 6S', geekbench: 2371 },
+                { device: 'iPhone 6S Plus', geekbench: 1471 },
+                { device: 'Other', geekbench: 1371 }
             ],
             xkey: 'device',
             ykeys: ['geekbench'],
-            labels: ['گیکبنچ'],
+            labels: ['Geekbench'],
             barRatio: 0.4,
             barColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
             xLabelAngle: 35,
@@ -3093,21 +2602,21 @@ function init_morris_charts() {
         Morris.Bar({
             element: 'graph_bar_group',
             data: [
-                {"period": "2016-10-01", "licensed": 807, "sorned": 660},
-                {"period": "2016-09-30", "licensed": 1251, "sorned": 729},
-                {"period": "2016-09-29", "licensed": 1769, "sorned": 1018},
-                {"period": "2016-09-20", "licensed": 2246, "sorned": 1461},
-                {"period": "2016-09-19", "licensed": 2657, "sorned": 1967},
-                {"period": "2016-09-18", "licensed": 3148, "sorned": 2627},
-                {"period": "2016-09-17", "licensed": 3471, "sorned": 3740},
-                {"period": "2016-09-16", "licensed": 2871, "sorned": 2216},
-                {"period": "2016-09-15", "licensed": 2401, "sorned": 1656},
-                {"period": "2016-09-10", "licensed": 2115, "sorned": 1022}
+                { "period": "2016-10-01", "licensed": 807, "sorned": 660 },
+                { "period": "2016-09-30", "licensed": 1251, "sorned": 729 },
+                { "period": "2016-09-29", "licensed": 1769, "sorned": 1018 },
+                { "period": "2016-09-20", "licensed": 2246, "sorned": 1461 },
+                { "period": "2016-09-19", "licensed": 2657, "sorned": 1967 },
+                { "period": "2016-09-18", "licensed": 3148, "sorned": 2627 },
+                { "period": "2016-09-17", "licensed": 3471, "sorned": 3740 },
+                { "period": "2016-09-16", "licensed": 2871, "sorned": 2216 },
+                { "period": "2016-09-15", "licensed": 2401, "sorned": 1656 },
+                { "period": "2016-09-10", "licensed": 2115, "sorned": 1022 }
             ],
             xkey: 'period',
             barColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
             ykeys: ['licensed', 'sorned'],
-            labels: ['مجاز', 'سوری'],
+            labels: ['Licensed', 'SORN'],
             hideHover: 'auto',
             xLabelAngle: 60,
             resize: true
@@ -3120,10 +2629,10 @@ function init_morris_charts() {
         Morris.Bar({
             element: 'graphx',
             data: [
-                {x: '2015 Q1', y: 2, z: 3, a: 4},
-                {x: '2015 Q2', y: 3, z: 5, a: 6},
-                {x: '2015 Q3', y: 4, z: 3, a: 2},
-                {x: '2015 Q4', y: 2, z: 4, a: 5}
+                { x: '2015 Q1', y: 2, z: 3, a: 4 },
+                { x: '2015 Q2', y: 3, z: 5, a: 6 },
+                { x: '2015 Q3', y: 4, z: 3, a: 2 },
+                { x: '2015 Q4', y: 2, z: 4, a: 5 }
             ],
             xkey: 'x',
             ykeys: ['y', 'z', 'a'],
@@ -3142,21 +2651,21 @@ function init_morris_charts() {
         Morris.Area({
             element: 'graph_area',
             data: [
-                {period: '2014 Q1', iphone: 2666, ipad: null, itouch: 2647},
-                {period: '2014 Q2', iphone: 2778, ipad: 2294, itouch: 2441},
-                {period: '2014 Q3', iphone: 4912, ipad: 1969, itouch: 2501},
-                {period: '2014 Q4', iphone: 3767, ipad: 3597, itouch: 5689},
-                {period: '2015 Q1', iphone: 6810, ipad: 1914, itouch: 2293},
-                {period: '2015 Q2', iphone: 5670, ipad: 4293, itouch: 1881},
-                {period: '2015 Q3', iphone: 4820, ipad: 3795, itouch: 1588},
-                {period: '2015 Q4', iphone: 15073, ipad: 5967, itouch: 5175},
-                {period: '2016 Q1', iphone: 10687, ipad: 4460, itouch: 2028},
-                {period: '2016 Q2', iphone: 8432, ipad: 5713, itouch: 1791}
+                { period: '2014 Q1', iphone: 2666, ipad: null, itouch: 2647 },
+                { period: '2014 Q2', iphone: 2778, ipad: 2294, itouch: 2441 },
+                { period: '2014 Q3', iphone: 4912, ipad: 1969, itouch: 2501 },
+                { period: '2014 Q4', iphone: 3767, ipad: 3597, itouch: 5689 },
+                { period: '2015 Q1', iphone: 6810, ipad: 1914, itouch: 2293 },
+                { period: '2015 Q2', iphone: 5670, ipad: 4293, itouch: 1881 },
+                { period: '2015 Q3', iphone: 4820, ipad: 3795, itouch: 1588 },
+                { period: '2015 Q4', iphone: 15073, ipad: 5967, itouch: 5175 },
+                { period: '2016 Q1', iphone: 10687, ipad: 4460, itouch: 2028 },
+                { period: '2016 Q2', iphone: 8432, ipad: 5713, itouch: 1791 }
             ],
             xkey: 'period',
             ykeys: ['iphone', 'ipad', 'itouch'],
             lineColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
-            labels: ['آیفون', 'آیپد', 'آیپد تاچ'],
+            labels: ['iPhone', 'iPad', 'iPod Touch'],
             pointSize: 2,
             hideHover: 'auto',
             resize: true
@@ -3169,10 +2678,10 @@ function init_morris_charts() {
         Morris.Donut({
             element: 'graph_donut',
             data: [
-                {label: 'مربا', value: 25},
-                {label: 'یخ زده', value: 40},
-                {label: 'فرنی', value: 25},
-                {label: 'شکر', value: 10}
+                { label: 'Jam', value: 25 },
+                { label: 'Frosted', value: 40 },
+                { label: 'Custard', value: 25 },
+                { label: 'Sugar', value: 10 }
             ],
             colors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
             formatter: function (y) {
@@ -3189,15 +2698,15 @@ function init_morris_charts() {
             element: 'graph_line',
             xkey: 'year',
             ykeys: ['value'],
-            labels: ['مقدار'],
+            labels: ['Value'],
             hideHover: 'auto',
             lineColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
             data: [
-                {year: '2012', value: 20},
-                {year: '2013', value: 10},
-                {year: '2014', value: 5},
-                {year: '2015', value: 5},
-                {year: '2016', value: 20}
+                { year: '2012', value: 20 },
+                { year: '2013', value: 10 },
+                { year: '2014', value: 5 },
+                { year: '2015', value: 5 },
+                { year: '2016', value: 20 }
             ],
             resize: true
         });
@@ -3211,14 +2720,13 @@ function init_morris_charts() {
 };
 
 
+
 /* ECHRTS */
 
 
 function init_echarts() {
 
-    if (typeof (echarts) === 'undefined') {
-        return;
-    }
+    if (typeof (echarts) === 'undefined') { return; }
     console.log('init_echarts');
 
 
@@ -3306,8 +2814,8 @@ function init_echarts() {
                 color: '#408829'
             },
             controlStyle: {
-                normal: {color: '#408829'},
-                emphasis: {color: '#408829'}
+                normal: { color: '#408829' },
+                emphasis: { color: '#408829' }
             }
         },
 
@@ -3443,14 +2951,14 @@ function init_echarts() {
 
         echartBar.setOption({
             title: {
-                text: 'عنوان نمودار',
-                subtext: 'زیر عنوان نمودار'
+                text: 'Graph title',
+                subtext: 'Graph Sub-text'
             },
             tooltip: {
                 trigger: 'axis'
             },
             legend: {
-                data: ['فروش‌ها', 'خرید‌ها']
+                data: ['sales', 'purchases']
             },
             toolbox: {
                 show: false
@@ -3464,7 +2972,7 @@ function init_echarts() {
                 type: 'value'
             }],
             series: [{
-                name: 'فروش‌ها',
+                name: 'sales',
                 type: 'bar',
                 data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
                 markPoint: {
@@ -3483,17 +2991,17 @@ function init_echarts() {
                     }]
                 }
             }, {
-                name: 'خرید‌ها',
+                name: 'purchases',
                 type: 'bar',
                 data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
                 markPoint: {
                     data: [{
-                        name: 'فروش‌ها',
+                        name: 'sales',
                         value: 182.2,
                         xAxis: 7,
                         yAxis: 183,
                     }, {
-                        name: 'خرید‌ها',
+                        name: 'purchases',
                         value: 2.3,
                         xAxis: 11,
                         yAxis: 3
@@ -3511,6 +3019,8 @@ function init_echarts() {
     }
 
 
+
+
     //echart Radar
 
     if ($('#echart_sonar').length) {
@@ -3519,8 +3029,8 @@ function init_echarts() {
 
         echartRadar.setOption({
             title: {
-                text: 'بودجه در مقابل هزینه',
-                subtext: 'زیر عنوان'
+                text: 'Budget vs spending',
+                subtext: 'Subtitle'
             },
             tooltip: {
                 trigger: 'item'
@@ -3536,45 +3046,45 @@ function init_echarts() {
                 feature: {
                     restore: {
                         show: true,
-                        title: "بازگردانی"
+                        title: "Restore"
                     },
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
             polar: [{
                 indicator: [{
-                    text: 'فروش ها',
+                    text: 'Sales',
                     max: 6000
                 }, {
-                    text: 'مدیریت',
+                    text: 'Administration',
                     max: 16000
                 }, {
-                    text: 'فناوری اطلاعات',
+                    text: 'Information Techology',
                     max: 30000
                 }, {
-                    text: 'پشتیبانی مشتری',
+                    text: 'Customer Support',
                     max: 38000
                 }, {
-                    text: 'توسعه',
+                    text: 'Development',
                     max: 52000
                 }, {
-                    text: 'بازار یابی',
+                    text: 'Marketing',
                     max: 25000
                 }]
             }],
             calculable: true,
             series: [{
-                name: 'بودجه در مقابل هزینه',
+                name: 'Budget vs spending',
                 type: 'radar',
                 data: [{
                     value: [4300, 10000, 28000, 35000, 50000, 19000],
-                    name: 'بودجه اختصاص یافته'
+                    name: 'Allocated Budget'
                 }, {
                     value: [5000, 14000, 28000, 31000, 42000, 21000],
-                    name: 'هزینه های واقعی'
+                    name: 'Actual Spending'
                 }]
             }]
         });
@@ -3589,8 +3099,8 @@ function init_echarts() {
 
         echartFunnel.setOption({
             title: {
-                text: 'نمودار اهراد هرم',
-                subtext: 'زیر عنوان'
+                text: 'Echart Pyramid Graph',
+                subtext: 'Subtitle'
             },
             tooltip: {
                 trigger: 'item',
@@ -3601,16 +3111,16 @@ function init_echarts() {
                 feature: {
                     restore: {
                         show: true,
-                        title: "بازگردانی"
+                        title: "Restore"
                     },
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
             legend: {
-                data: ['چیزی #1', 'چیزی #2', 'چیزی #3', 'چیزی #4', 'چیزی #5'],
+                data: ['Something #1', 'Something #2', 'Something #3', 'Something #4', 'Something #5'],
                 orient: 'vertical',
                 x: 'left',
                 y: 'bottom'
@@ -3622,19 +3132,19 @@ function init_echarts() {
                 width: '40%',
                 data: [{
                     value: 60,
-                    name: 'چیزی #1'
+                    name: 'Something #1'
                 }, {
                     value: 40,
-                    name: 'چیزی #2'
+                    name: 'Something #2'
                 }, {
                     value: 20,
-                    name: 'چیزی #3'
+                    name: 'Something #3'
                 }, {
                     value: 80,
-                    name: 'چیزی #4'
+                    name: 'Something #4'
                 }, {
                     value: 100,
-                    name: 'چیزی #5'
+                    name: 'Something #5'
                 }]
             }]
         });
@@ -3656,16 +3166,16 @@ function init_echarts() {
                 feature: {
                     restore: {
                         show: true,
-                        title: "بازگردانی"
+                        title: "Restore"
                     },
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
             series: [{
-                name: 'کارایی',
+                name: 'Performance',
                 type: 'gauge',
                 center: ['50%', '50%'],
                 startAngle: 140,
@@ -3754,7 +3264,7 @@ function init_echarts() {
                 },
                 data: [{
                     value: 50,
-                    name: 'کارایی'
+                    name: 'Performance'
                 }]
             }]
         });
@@ -3769,8 +3279,8 @@ function init_echarts() {
 
         echartLine.setOption({
             title: {
-                text: 'نمودار خطی',
-                subtext: 'زیر عنوان'
+                text: 'Line Graph',
+                subtext: 'Subtitle'
             },
             tooltip: {
                 trigger: 'axis'
@@ -3795,11 +3305,11 @@ function init_echarts() {
                     },
                     restore: {
                         show: true,
-                        title: "بازگردانی"
+                        title: "Restore"
                     },
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
@@ -3861,8 +3371,8 @@ function init_echarts() {
 
         echartScatter.setOption({
             title: {
-                text: 'نمودار پراکندگی',
-                subtext: 'هاینز 2003'
+                text: 'Scatter Graph',
+                subtext: 'Heinz  2003'
             },
             tooltip: {
                 trigger: 'axis',
@@ -3883,7 +3393,7 @@ function init_echarts() {
                 feature: {
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
@@ -4481,8 +3991,8 @@ function init_echarts() {
 
         echartBar.setOption({
             title: {
-                text: 'نمودار میله‌ای',
-                subtext: 'زیر عنوان'
+                text: 'Bar Graph',
+                subtext: 'Graph subtitle'
             },
             tooltip: {
                 trigger: 'axis'
@@ -4496,7 +4006,7 @@ function init_echarts() {
                 feature: {
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
@@ -4547,11 +4057,11 @@ function init_echarts() {
                     },
                     restore: {
                         show: true,
-                        title: "بازگردانی"
+                        title: "Restore"
                     },
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
@@ -4623,11 +4133,11 @@ function init_echarts() {
                     },
                     restore: {
                         show: true,
-                        title: "بازگردانی"
+                        title: "Restore"
                     },
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
@@ -4709,11 +4219,11 @@ function init_echarts() {
                     },
                     restore: {
                         show: true,
-                        title: "بازگردانی"
+                        title: "Restore"
                     },
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
@@ -4800,7 +4310,7 @@ function init_echarts() {
                 x: 170,
                 y: 45,
                 itemGap: 12,
-                data: ['68%چیزی #1', '29%چیزی #2', '3%چیزی #3'],
+                data: ['68%Something #1', '29%Something #2', '3%Something #3'],
             },
             toolbox: {
                 show: true,
@@ -4820,11 +4330,11 @@ function init_echarts() {
                     },
                     restore: {
                         show: true,
-                        title: "بازگردانی"
+                        title: "Restore"
                     },
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
@@ -4836,7 +4346,7 @@ function init_echarts() {
                 itemStyle: dataStyle,
                 data: [{
                     value: 68,
-                    name: '68%چیزی #1'
+                    name: '68%Something #1'
                 }, {
                     value: 32,
                     name: 'invisible',
@@ -4850,7 +4360,7 @@ function init_echarts() {
                 itemStyle: dataStyle,
                 data: [{
                     value: 29,
-                    name: '29%چیزی #2'
+                    name: '29%Something #2'
                 }, {
                     value: 71,
                     name: 'invisible',
@@ -4864,7 +4374,7 @@ function init_echarts() {
                 itemStyle: dataStyle,
                 data: [{
                     value: 3,
-                    name: '3%چیزی #3'
+                    name: '3%Something #3'
                 }, {
                     value: 97,
                     name: 'invisible',
@@ -4884,8 +4394,8 @@ function init_echarts() {
 
         echartMap.setOption({
             title: {
-                text: 'جمعیت جهان (2010)',
-                subtext: 'از سازمان ملل متحد، مجموع جمعیت، هر دو جنس ترکیبی، از 1 جولای (هزاران نفر)',
+                text: 'World Population (2010)',
+                subtext: 'from United Nations, Total population, both sexes combined, as of 1 July (thousands)',
                 x: 'center',
                 y: 'top'
             },
@@ -4918,11 +4428,11 @@ function init_echarts() {
                     },
                     restore: {
                         show: true,
-                        title: "بازگردانی"
+                        title: "Restore"
                     },
                     saveAsImage: {
                         show: true,
-                        title: "ذخیره تصویر"
+                        title: "Save Image"
                     }
                 }
             },
@@ -5488,68 +4998,9 @@ function init_echarts() {
 
 }
 
-function toggleFullScreen() {
-    if (!document.fullscreenElement &&    // alternative standard method
-        !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {  // current working methods
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen();
-        } else if (document.documentElement.msRequestFullscreen) {
-            document.documentElement.msRequestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) {
-            document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.webkitRequestFullscreen) {
-            document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
-    }
-}
-
-function lock_screen() {
-    setInterval(function () {
-
-        var currentTime = new Date();
-        var hours = currentTime.getHours();
-        var minutes = currentTime.getMinutes();
-        var seconds = currentTime.getSeconds();
-
-        // Add leading zeros
-        minutes = (minutes < 10 ? "0" : "") + minutes;
-        seconds = (seconds < 10 ? "0" : "") + seconds;
-        hours = (hours < 10 ? "0" : "") + hours;
-
-        // Compose the string for display
-        var currentTimeString = hours + ":" + minutes + ":" + seconds;
-        $("#lock_screen .clock").html(currentTimeString);
-
-    }, 1000);
-    $(document).on('click', '.lock_btn', function (e) {
-        e.preventDefault();
-        $('body').addClass('lock');
-    });
-    $(document).on('mouseover', '.unlock #icon_lock', function (e) {
-        $(this).removeClass('fa-lock').addClass('fa-unlock');
-    });
-    $(document).on('mouseout', '.unlock #icon_lock', function (e) {
-        $(this).removeClass('fa-unlock').addClass('fa-lock');
-    });
-    $(document).on('click', '.unlock', function (e) {
-        e.preventDefault();
-        $('body').removeClass('lock');
-    });
-}
 
 $(document).ready(function () {
-    // moment().locale('fa');
-    // moment.loadPersian();
+
     init_sparklines();
     init_flot_chart();
     init_sidebar();
@@ -5584,6 +5035,5 @@ $(document).ready(function () {
     init_CustomNotification();
     init_autosize();
     init_autocomplete();
-    lock_screen();
-});
 
+});	
