@@ -15,9 +15,10 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $access = ['admin','customer','vendor'];
         return [
             'name' => $this->faker->name(),
-            'access'=>array_rand(['admin','customer','vendor']),
+            'access'=>$access[array_rand($access)],
             'status'=>'actived',
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
