@@ -14,7 +14,7 @@
                     <div class="x_content">
                         <form action="{{route('admin.category.store')}}" method="post" enctype="multipart/form-data" id="demo-form2" class="form-horizontal form-label-left">
                             @csrf
-                            <div class="form-group">
+                            <div class="form-group mt-3">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">Title <b class="text-danger font-14">*</b></label>
                                 <div class="col-md-10 col-sm-10 col-xs-12">
                                     <input type="text" class="form-control font-14" name="title" value="{{old('title')}}" placeholder="Title">

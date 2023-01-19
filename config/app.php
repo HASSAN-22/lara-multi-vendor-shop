@@ -15,6 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
     'paginate' => env('PAGINATE',15),
+    'image_size' => env('IMAGE_SIZE'),
 
     /*
     |--------------------------------------------------------------------------

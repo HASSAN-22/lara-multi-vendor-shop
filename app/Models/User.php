@@ -59,4 +59,8 @@ class User extends Authenticatable
     public function loginHistories(){
         return $this->hasMany(LoginHistory::class);
     }
+
+    public function brand(){
+        return $this->hasOne(Brand::class);
+    }
 }

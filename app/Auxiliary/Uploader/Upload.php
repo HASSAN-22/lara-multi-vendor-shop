@@ -31,7 +31,7 @@ class Upload{
 
     private static function move($file, string $directory): string{
         $path = $file->store($directory);
-        return str_replace('uploader/','',$path);
+        return str_replace('public/','',$path);
     }
 
     /**
@@ -48,7 +48,7 @@ class Upload{
 
         if( $request->hasFile($key) ){
             $file = $index == '' ? $request->file($key) : $request->file($key)[$index];
-            return "/storage/".static::move($file, $directory);
+            return "/storage/".static::move($file, 'public/'.$directory);
         }
         return empty($lastPath) ? null : $lastPath;
     }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -19,14 +20,16 @@ class DatabaseSeeder extends Seeder
 
         Schema::disableForeignKeyConstraints();
         $this->truncate();
-         \App\Models\User::factory(20)->create();
+//         \App\Models\User::factory(20)->create();
          \App\Models\Category::factory(20)->create();
+         \App\Models\Brand::factory(10)->create();
         Schema::enableForeignKeyConstraints();
 
     }
 
     private function truncate(){
-        User::truncate();
+//        User::truncate();
         Category::truncate();
+        Brand::truncate();
     }
 }
