@@ -75,7 +75,7 @@ class GuaranteeController extends Controller
      * @param  \App\Models\Guarantee  $guarantee
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Guarantee $guarantee)
+    public function update(GuaranteeRequest $request, Guarantee $guarantee)
     {
         $this->authorize('update',$guarantee);
         $guarantee = $guarantee->update(['guarantee'=>$request->guarantee]);
