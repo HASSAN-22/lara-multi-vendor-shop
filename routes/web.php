@@ -28,4 +28,5 @@ Route::group(['middleware'=>'auth', 'prefix'=>'admin','as'=>'admin.'],function()
     Route::resource('category',\App\Http\Controllers\Admin\CategoryController::class);
     Route::resource('brand',\App\Http\Controllers\Admin\BrandController::class);
     Route::resource('guarantee',\App\Http\Controllers\Admin\GuaranteeController::class);
+    Route::resource('property',\App\Http\Controllers\Admin\PropertyController::class);
 });
