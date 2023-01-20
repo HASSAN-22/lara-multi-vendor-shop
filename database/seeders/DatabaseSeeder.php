@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Guarantee;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +24,7 @@ class DatabaseSeeder extends Seeder
 //         \App\Models\User::factory(20)->create();
          \App\Models\Category::factory(20)->create();
          \App\Models\Brand::factory(10)->create();
+         \App\Models\Guarantee::factory(4)->create();
         Schema::enableForeignKeyConstraints();
 
     }
@@ -31,5 +33,6 @@ class DatabaseSeeder extends Seeder
 //        User::truncate();
         Category::truncate();
         Brand::truncate();
+        Guarantee::truncate();
     }
 }
