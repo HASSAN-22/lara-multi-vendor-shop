@@ -14,7 +14,7 @@ class Guarantee extends Model
     public function scopeSearch($query){
         $search = trim(request()->search);
         if($search != ''){
-            $query = $query->where('guarantee','like',"%$search");
+            $query = $query->where('guarantee','like',"%$search%");
         }
         return $query;
     }

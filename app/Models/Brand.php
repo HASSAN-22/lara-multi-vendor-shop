@@ -22,7 +22,7 @@ class Brand extends Model
         if($search != ''){
             $user = auth()->user();
             $query = $user->isAdmin() ? $query : $query->wher('user_id',$user->id);
-            $query = $query->where('brand_name','like',"%$search%")->orWhere('brand_website','like',"%$search")
+            $query = $query->where('brand_name','like',"%$search%")->orWhere('brand_website','like',"%$search%")
                 ->orWhere('status',$search)->orWhereRelation('user','name',$search);
         }
         return $query;

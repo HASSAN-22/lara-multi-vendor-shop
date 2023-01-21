@@ -22,7 +22,7 @@ class Category extends Model
     public function scopeSearch($query){
         $search = trim(request()->search);
         if($search != ''){
-            $query = $query->where('title','like',"%$search")->orWhere('status',$search)->orWhereRelation('category','title',$search);
+            $query = $query->where('title','like',"%$search%")->orWhere('status',$search)->orWhereRelation('category','title',$search);
         }
         return $query;
     }

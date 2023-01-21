@@ -14,7 +14,7 @@ class Property extends Model
     public function scopeSearch($query){
         $search = trim(request()->search);
         if($search != ''){
-            $query = $query->where('property','like',"%$search");
+            $query = $query->where('property%','like',"%$search");
         }
         return $query;
     }
