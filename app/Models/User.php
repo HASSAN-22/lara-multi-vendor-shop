@@ -44,6 +44,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function scopeSearch($query){
+        $search = trim(request()->search);
+        if($search != ''){
+            $query = $query->where('name','like',"%$search%")->orWhere('email','like',"%$search%")->orWhere('status',$search)->orWhere('access',$search);
+        }
+        return $query;
+    }
+
     public function isAdmin(){
         return $this->access == 'admin';
     }
