@@ -19,7 +19,7 @@ class CreateBrandsTable extends Migration
             $table->string('brand_name');
             $table->string('brand_logo');
             $table->string('brand_website')->nullable();
-            $table->enum('status',['activated','deactivated']);
+            $table->enum('status',['pending_confirmation','activated','deactivated']);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

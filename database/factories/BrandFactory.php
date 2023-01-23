@@ -20,7 +20,7 @@ class BrandFactory extends Factory
             'brand_name'=>$name,
             'brand_logo'=>$this->faker->imageUrl,
             'brand_website'=>$this->faker->url,
-            'status'=>'activated'
+            'status'=>'pending_confirmation'
         ];
     }
 }

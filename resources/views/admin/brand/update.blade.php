@@ -58,6 +58,7 @@
                                 <div class="col-md-10 col-sm-10 col-xs-12">
                                     <select name="status" id="status" class="form-control font-14">
                                         <option value="" selected disabled>--- Select item ---</option>
+                                        <option value="activated" {{in_array('pending_confirmation',[old('status'),$brand->status]) ? 'pending_confirmation' : ''}}>pending confirmation</option>
                                         <option value="activated" {{in_array('activated',[old('status'),$brand->status]) ? 'selected' : ''}}>activated</option>
                                         <option value="deactivated" {{in_array('deactivated',[old('status'),$brand->status]) ? 'selected' : ''}}>deactivated</option>
                                     </select>

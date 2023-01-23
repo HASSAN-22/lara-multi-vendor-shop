@@ -38,7 +38,7 @@
                                         <td class="text-center">{{$item->brand_name}}</td>
                                         <td class="text-center"><img src="{{$item->brand_logo}}" width="70" height="70" /></td>
                                         <td class="text-center"><a href="{{$item->brand_website}}" target="_blank">Open website</a></td>
-                                        <td class="text-center">{{$item->status}}</td>
+                                        <td class="text-center">{{str_replace('_',' ',$item->status)}}</td>
                                         <td class="flex align-center justify-center">
                                             <a href="{{route('admin.brand.edit',['brand'=>$item->id])}}" class="btn btn-info font-14">Edit</a>
                                             <form action="{{route('admin.brand.destroy',['brand'=>$item->id])}}" method="post">

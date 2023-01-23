@@ -27,7 +27,7 @@ class BrandRequest extends FormRequest
             'brand_name'=>['required','string','max:255'],
             'brand_logo'=>['required','mimes:jpg,jpeg,png','max:'.config('app.image_size')],
             'brand_website'=>['nullable','string','max:255'],
-            'status'=>['required','string','max:255','in:activated,deactivated']
+            'status'=>['required','string','max:255','in:pending_confirmation,activated,deactivated']
         ];
 
         if(auth()->user()->isAdmin()){

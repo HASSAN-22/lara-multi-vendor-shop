@@ -53,6 +53,7 @@
                                 <div class="col-md-10 col-sm-10 col-xs-12">
                                     <select name="status" id="status" class="form-control font-14">
                                         <option value="" selected disabled>--- Select item ---</option>
+                                        <option value="pending_confirmation" {{old('status') == 'pending_confirmation' ? 'selected' : ''}}>pending confirmation</option>
                                         <option value="activated" {{old('status') == 'activated' ? 'selected' : ''}}>activated</option>
                                         <option value="deactivated" {{old('status') == 'deactivated' ? 'selected' : ''}}>deactivated</option>
                                     </select>
