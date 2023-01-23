@@ -18,4 +18,8 @@ class Property extends Model
         }
         return $query;
     }
+
+    public function productProperties(){
+        return $this->hasMany(ProductProperty::class);
+    }
 }

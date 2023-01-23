@@ -71,4 +71,8 @@ class User extends Authenticatable
     public function brand(){
         return $this->hasOne(Brand::class);
     }
+
+    public function products(){
+        return $this->hasMany(Product::class);
+    }
 }
