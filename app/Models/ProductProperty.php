@@ -16,6 +16,7 @@ class ProductProperty extends Model
     protected $fillable = [
         'product_id',
         'property_id',
+        'name',
         'count',
         'price',
     ];

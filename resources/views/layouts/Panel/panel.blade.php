@@ -232,6 +232,8 @@ $user = auth()->user();
 
 <!-- Custom Theme Scripts -->
 <script src="{{asset('Panel/build/js/custom.min.js')}}"></script>
+<script src="{{asset('js/axios.js')}}"></script>
+<script src="{{asset('js/js.js')}}"></script>
 @yield('b_js')
 </body>
 </html>

@@ -5,11 +5,13 @@ namespace App\Providers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Guarantee;
+use App\Models\Product;
 use App\Models\Property;
 use App\Models\User;
 use App\Policies\BrandPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\GuaranteePolicy;
+use App\Policies\ProductPolicy;
 use App\Policies\PropertyPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -28,6 +30,7 @@ class AuthServiceProvider extends ServiceProvider
         Guarantee::class => GuaranteePolicy::class,
         Property::class => PropertyPolicy::class,
         User::class => UserPolicy::class,
+        Product::class => ProductPolicy::class,
     ];
 
     /**

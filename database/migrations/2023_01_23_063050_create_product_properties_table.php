@@ -17,8 +17,9 @@ class CreateProductPropertiesTable extends Migration
             $table->id();
             $table->foreignId('product_id');
             $table->foreignId('property_id');
+            $table->string('name');
             $table->integer('count');
-            $table->integer('price');
+            $table->decimal('price');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
 

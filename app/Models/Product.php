@@ -26,6 +26,19 @@ class Product extends Model
         'is_original',
     ];
 
+    public function scopeSearch($query){
+        $search = trim(request()->search);
+        if($search != ''){
+            $search = str_replace([',','$'],'',$search);
+            $user = auth()->user();
+            $query = $user->isAdmin() ? $query : $query->wher('user_id',$user->id);
+            $query = $query->orWhere('title','like',"%$search%")
+                ->orWhere('price',$search)
+                ->orWhere('status',$search)->orWhereRelation('user','name',$search)->orWhereRelation('category','title',$search);
+        }
+        return $query;
+    }
+
     public function user(){
         return $this->belongsTo(User::class);
     }
@@ -42,6 +55,10 @@ class Product extends Model
         return $this->belongsTo(Guarantee::class);
     }
 
+    public function image(){
+        return $this->hasOne(ProductImage::class);
+    }
+
     public function productImages(){
         return $this->hasMany(ProductImage::class);
     }
@@ -50,7 +67,7 @@ class Product extends Model
         return $this->hasMany(ProductProperty::class);
     }
 
-    public function productSpecification(){
+    public function productSpecifications(){
         return $this->hasMany(ProductSpecification::class);
     }
 }

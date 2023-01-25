@@ -30,4 +30,6 @@ Route::group(['middleware'=>'auth', 'prefix'=>'admin','as'=>'admin.'],function()
     Route::resource('guarantee',\App\Http\Controllers\Admin\GuaranteeController::class);
     Route::resource('property',\App\Http\Controllers\Admin\PropertyController::class);
     Route::resource('user',\App\Http\Controllers\Admin\UserController::class);
+    Route::resource('product',\App\Http\Controllers\Admin\ProductController::class);
+    Route::post('deleteImage/{productImage}',[\App\Http\Controllers\Admin\ProductController::class,'deleteImage'])->name('product.deleteImage');
 });

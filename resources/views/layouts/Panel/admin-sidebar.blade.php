@@ -1,4 +1,4 @@
-<li><a><i class="fa fa-home"></i> Category <span class="fa fa-chevron-down"></span></a>
+<li><a><i class="fa fa-cubes"></i> Category <span class="fa fa-chevron-down"></span></a>
     <ul class="nav child_menu">
         <li><a href="{{route('admin.category.index')}}">Category list</a></li>
     </ul>
@@ -10,6 +10,12 @@
         <li><a href="{{route('admin.property.index')}}">Property list</a></li>
     </ul>
 </li>
+<li><a><i class="fa fa-cube"></i> Product <span class="fa fa-chevron-down"></span></a>
+    <ul class="nav child_menu">
+        <li><a href="{{route('admin.product.index')}}">Product list</a></li>
+    </ul>
+</li>
+
 <li><a><i class="fa fa-users"></i> User <span class="fa fa-chevron-down"></span></a>
     <ul class="nav child_menu">
         <li><a href="{{route('admin.user.index')}}">User list</a></li>

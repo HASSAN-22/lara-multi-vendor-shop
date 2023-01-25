@@ -12,3 +12,29 @@
 .font-14{
     font-size: 14px !important;
 }
+
+
+.product-box{
+    background: #fafafa !important;
+    width: 100%;
+    border-radius: 0.4rem;
+    padding: 1rem;
+    box-shadow: 0px 1px 3px 0px #efefef;
+}
+.product{
+    gap:1rem;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+.red-alert{
+    background: #f9c9c9;
+    color: red;
+    padding: 0.7rem;
+    border-radius: 0.6rem;
+}
+@media only screen and (max-width: 768px) {
+    .product{
+        flex-wrap: wrap !important;
+    }
+}
