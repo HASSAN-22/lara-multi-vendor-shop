@@ -32,8 +32,8 @@ class DatabaseSeeder extends Seeder
          \App\Models\Brand::factory(10)->create();
          \App\Models\Guarantee::factory(4)->create();
          \App\Models\Property::factory(2)->create();
-         \App\Models\Product::factory(10)->create();
-         for ($i=1; $i<=10;$i++){
+         \App\Models\Product::factory(1000)->create();
+         for ($i=1; $i<=1000;$i++){
              \App\Models\ProductImage::factory(1)->create(['product_id'=>$i]);
              \App\Models\ProductProperty::factory(1)->create(['product_id'=>$i]);
              \App\Models\ProductSpecification::factory(1)->create(['product_id'=>$i]);
