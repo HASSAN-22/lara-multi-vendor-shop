@@ -33,3 +33,12 @@ Route::group(['middleware'=>'auth', 'prefix'=>'admin','as'=>'admin.'],function()
     Route::resource('product',\App\Http\Controllers\Admin\ProductController::class);
     Route::post('deleteImage/{productImage}',[\App\Http\Controllers\Admin\ProductController::class,'deleteImage'])->name('product.deleteImage');
 });
+
+// ############################################ All Routes ##########################################
+
+Route::group(['middleware'=>'auth'],function(){
+    Route::controller(\App\Http\Controllers\ProfileController::class)->group(function(){
+        Route::get('profile/{user}','edit')->name('profile.edit');
+        Route::patch('profile/{user}','update')->name('profile.update');
+    });
+});

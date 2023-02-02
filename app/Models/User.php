@@ -57,11 +57,11 @@ class User extends Authenticatable
     }
 
     public function isCustomer(){
-        return $this->accsess == 'customer';
+        return $this->access == 'customer';
     }
 
     public function isVendor(){
-        return $this->accsess == 'vendor';
+        return $this->access == 'vendor';
     }
 
     public function loginHistories(){
@@ -74,5 +74,13 @@ class User extends Authenticatable
 
     public function products(){
         return $this->hasMany(Product::class);
+    }
+
+    public function profile(){
+        return $this->hasOne(Profile::class);
+    }
+
+    public function shopName(){
+        return $this->profile->shop_name;
     }
 }

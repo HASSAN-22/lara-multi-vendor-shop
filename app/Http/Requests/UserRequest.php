@@ -27,12 +27,13 @@ class UserRequest extends FormRequest
             'name'=>['required','string','max:255'],
             'access'=>['required','string','max:255','in:admin,vendor,customer'],
             'status'=>['required','string','max:255','in:activated,deactivated'],
-            'email'=>['required','string','max:255','email'],
+            'email'=>['required','string','max:255','email','unique:users,email'],
             'password'=>['required','string','min:6','max:255'],
         ];
 
         if($this->isMethod('patch')){
             $validation['password'][0] = 'nullable';
+            $validation['email'][4] = 'unique:users,email,id';
         }
         return $validation;
     }
