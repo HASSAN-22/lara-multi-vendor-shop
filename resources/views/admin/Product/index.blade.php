@@ -6,7 +6,7 @@
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                     <div class="x_title">
-                        <h2>User list</h2>
+                        <h2>Product list</h2>
                         <div class="clearfix"></div>
                     </div>
                     <x-error-message-component></x-error-message-component>
