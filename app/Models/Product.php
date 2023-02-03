@@ -31,10 +31,12 @@ class Product extends Model
         if($search != ''){
             $search = str_replace([',','$'],'',$search);
             $user = auth()->user();
-            $query = $user->isAdmin() ? $query : $query->wher('user_id',$user->id);
-            $query = $query->orWhere('title','like',"%$search%")
-                ->orWhere('price',$search)
-                ->orWhere('status',$search)->orWhereRelation('user','name',$search)->orWhereRelation('category','title',$search);
+            $query = $user->isAdmin() ? $query : $query->where('user_id',$user->id);
+            $query = $query->where(function($query)use($search){
+                $query->orWhere('title','like',"%$search%")
+                    ->orWhere('price',$search)
+                    ->orWhere('status',$search)->orWhereRelation('user','name',$search)->orWhereRelation('category','title',$search);
+            });
         }
         return $query;
     }

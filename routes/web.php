@@ -34,6 +34,13 @@ Route::group(['middleware'=>'auth', 'prefix'=>'admin','as'=>'admin.'],function()
     Route::post('deleteImage/{productImage}',[\App\Http\Controllers\Admin\ProductController::class,'deleteImage'])->name('product.deleteImage');
 });
 
+// ############################################ Vendor Routes ##########################################
+
+Route::group(['middleware'=>'auth', 'prefix'=>'admin','as'=>'vendor.'],function(){
+    Route::resource('product',\App\Http\Controllers\vendor\ProductController::class);
+    Route::post('deleteImage/{productImage}',[\App\Http\Controllers\vendor\ProductController::class,'deleteImage'])->name('product.deleteImage');
+});
+
 // ############################################ All Routes ##########################################
 
 Route::group(['middleware'=>'auth'],function(){
