@@ -40,5 +40,7 @@ Route::group(['middleware'=>'auth'],function(){
     Route::controller(\App\Http\Controllers\ProfileController::class)->group(function(){
         Route::get('profile/{user}','edit')->name('profile.edit');
         Route::patch('profile/{user}','update')->name('profile.update');
+        Route::get('password/{user}','passwordEdit')->name('password.edit');
+        Route::patch('password/{user}','passwordUpdate')->name('password.update');
     });
 });

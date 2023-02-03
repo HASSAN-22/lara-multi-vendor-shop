@@ -67,4 +67,8 @@ class UserPolicy
         return $user->isAdmin();
     }
 
+    public function passwordUpdate(User $user, User $model){
+        return ($user->isAdmin() or $user->isCustomer() or $user->isVendor()) and $model->id == $user->id;
+    }
+
 }
