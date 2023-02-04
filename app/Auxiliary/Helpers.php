@@ -19,8 +19,9 @@ if(! function_exists('limit')){
 if(! function_exists('removeFile')){
     function removeFile($image){
         if(!empty($image)){
-            if(file_exists(storage_path($image))){
-                unlink(storage_path($image));
+            if(file_exists(public_path($image))){
+                $image = str_replace('/storage','',$image);
+                \Illuminate\Support\Facades\Storage::delete('/public' . $image);;
             }
         }
     }
@@ -31,8 +32,9 @@ if(! function_exists('removeFiles')){
     function removeFiles($images){
         foreach ($images as $image){
             if(!empty($image)){
-                if(file_exists(storage_path($image))){
-                    unlink(storage_path($image));
+                if(file_exists(public_path($image))){
+                    $image = str_replace('/storage','',$image);
+                    \Illuminate\Support\Facades\Storage::delete('/public' . $image);;
                 }
             }
         }
