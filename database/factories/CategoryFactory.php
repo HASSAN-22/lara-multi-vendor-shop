@@ -15,15 +15,8 @@ class CategoryFactory extends Factory
      */
     public function definition()
     {
-        $title = $this->faker->sentence(2);
-
         return [
-            'parent_id'=>random_int(0,20),
-            'title'=>rtrim($title, '.'),
-            'slug'=>Str::slug(rtrim($title, '.')),
-            'status'=>'activated',
-            'meta_description'=>$this->faker->paragraph,
-            'meta_keyword'=>$this->faker->paragraph,
+
         ];
     }
 }

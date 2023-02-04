@@ -25,7 +25,7 @@ class CategoryRequest extends FormRequest
     {
         return [
             'parent_id'=>['required','numeric'],
-            'title'=>['required','string','max:255','unique:categories,id'],
+            'title'=>['required','string','max:255'],
             'status'=>['required','string','max:255','in:activated,deactivated'],
             'meta_description'=>['nullable','string','max:3000'],
             'meta_keyword'=>['nullable','string','max:3000'],

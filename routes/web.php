@@ -13,13 +13,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('index');
-});
-
 Auth::routes();
-
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+// ############################################ Front Routes ##########################################
+
+Route::group([],function(){
+    Route::get('/',[\App\Http\Controllers\SiteController::class,'index'])->name('index');
+});
 
 
 // ############################################ Admin Routes ##########################################

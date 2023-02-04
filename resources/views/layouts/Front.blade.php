@@ -1,3 +1,7 @@
+<?php
+
+$categories = \App\Models\Category::get();
+?>
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -24,6 +28,7 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{asset('Front/css/style.css')}}" rel="stylesheet">
+    <link href="{{asset('css.css')}}" rel="stylesheet">
     @yield('f_css')
 </head>
 
@@ -105,22 +110,42 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
-                        <a href="index.html" class="nav-item nav-link active">Home</a>
+                        <a href="{{route('index')}}" class="nav-item nav-link active">Home</a>
                         <a href="shop.html" class="nav-item nav-link">Shop</a>
                         <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                            <div class="dropdown-menu rounded-0 m-0">
-                                <a href="cart.html" class="dropdown-item">Shopping Cart</a>
-                                <a href="checkout.html" class="dropdown-item">Checkout</a>
+                        @foreach($categories as $category)
+                            <div class="nav-item dropdown">
+                                @if($category->parent_id == 0)
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{$category->title}}</a>
+                                @endif
+                                <ul class="dropdown-menu m-0">
+                                    @foreach($category->childes as $item)
+                                        <li>
+                                            <a class="dropdown-item" href="#"> {{$item->title}} </a>
+                                            <x-navbar-component :category="$item"></x-navbar-component>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </div>
-                        </div>
+                        @endforeach
                         <a href="contact.html" class="nav-item nav-link">Contact</a>
                     </div>
-                    <div class="navbar-nav ml-auto py-0">
-                        <a href="{{route('login')}}" class="nav-item nav-link">Login</a>
-                        <a href="{{route('register')}}" class="nav-item nav-link">Register</a>
-                    </div>
+                    @guest()
+                        <div class="navbar-nav ml-auto py-0">
+                            <a href="{{route('login')}}" class="nav-item nav-link">Login</a>
+                            <a href="{{route('register')}}" class="nav-item nav-link">Register</a>
+                        </div>
+                    @else
+                        <div class="navbar-nav ml-auto py-0">
+                            <a href="{{route('home')}}" class="nav-item nav-link">Dashboard</a>
+                            <a href="{{ route('logout') }}" class="nav-item nav-link" onclick="event.preventDefault(); document.getElementById('frm-logout').submit();">
+                                Logout
+                            </a>
+                            <form id="frm-logout" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                {{ csrf_field() }}
+                            </form>
+                        </div>
+                    @endguest
                 </div>
             </nav>
             @yield('slider')

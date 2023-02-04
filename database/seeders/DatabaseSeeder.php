@@ -14,6 +14,7 @@ use App\Models\Property;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -28,7 +29,9 @@ class DatabaseSeeder extends Seeder
         Schema::disableForeignKeyConstraints();
         $this->truncate();
 //         \App\Models\User::factory(20)->create();
-         \App\Models\Category::factory(20)->create();
+        $this->addCategory();
+
+
          \App\Models\Brand::factory(10)->create();
          \App\Models\Guarantee::factory(4)->create();
          \App\Models\Property::factory(2)->create();
@@ -53,6 +56,95 @@ class DatabaseSeeder extends Seeder
         ProductProperty::truncate();
         ProductSpecification::truncate();
         ProductImage::truncate();
+    }
+
+    private function addCategory(){
+        $data = [
+            [
+                'parent_id'=>0,
+                'title'=>'Woman',
+                'slug'=>Str::slug(rtrim('Woman', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+
+            [
+                'parent_id'=>1,
+                'title'=>'Shoes',
+                'slug'=>Str::slug(rtrim('Shoes', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+            [
+                'parent_id'=>1,
+                'title'=>'Clothing',
+                'slug'=>Str::slug(rtrim('Clothing', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+            [
+                'parent_id'=>2,
+                'title'=>'Boots',
+                'slug'=>Str::slug(rtrim('Boots', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+            [
+                'parent_id'=>3,
+                'title'=>'Dresses',
+                'slug'=>Str::slug(rtrim('Dresses', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+
+            //////////////////////
+            [
+                'parent_id'=>0,
+                'title'=>'Men',
+                'slug'=>Str::slug(rtrim('Men', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+            [
+                'parent_id'=>6,
+                'title'=>'Shoes',
+                'slug'=>Str::slug(rtrim('Shoes', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+            [
+                'parent_id'=>6,
+                'title'=>'Clothing',
+                'slug'=>Str::slug(rtrim('Clothing', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+            [
+                'parent_id'=>7,
+                'title'=>'Boots',
+                'slug'=>Str::slug(rtrim('Boots', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+            [
+                'parent_id'=>8,
+                'title'=>'Dresses',
+                'slug'=>Str::slug(rtrim('Dresses', '.')),
+                'status'=>'activated',
+                'meta_description'=>'meta description',
+                'meta_keyword'=>'meta keywoard',
+            ],
+        ];
+        \App\Models\Category::insert($data);
     }
 
 }
