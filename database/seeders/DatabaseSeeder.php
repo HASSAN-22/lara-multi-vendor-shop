@@ -11,6 +11,7 @@ use App\Models\ProductImage;
 use App\Models\ProductProperty;
 use App\Models\ProductSpecification;
 use App\Models\Property;
+use App\Models\Slider;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
@@ -41,6 +42,7 @@ class DatabaseSeeder extends Seeder
              \App\Models\ProductProperty::factory(1)->create(['product_id'=>$i]);
              \App\Models\ProductSpecification::factory(1)->create(['product_id'=>$i]);
          }
+        \App\Models\Slider::factory(2)->create();
 
         Schema::enableForeignKeyConstraints();
 
@@ -56,6 +58,7 @@ class DatabaseSeeder extends Seeder
         ProductProperty::truncate();
         ProductSpecification::truncate();
         ProductImage::truncate();
+        Slider::truncate();
     }
 
     private function addCategory(){

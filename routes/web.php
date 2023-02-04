@@ -32,13 +32,14 @@ Route::group(['middleware'=>'auth', 'prefix'=>'admin','as'=>'admin.'],function()
     Route::resource('guarantee',\App\Http\Controllers\Admin\GuaranteeController::class);
     Route::resource('property',\App\Http\Controllers\Admin\PropertyController::class);
     Route::resource('user',\App\Http\Controllers\Admin\UserController::class);
+    Route::resource('slider',\App\Http\Controllers\Admin\SliderController::class);
     Route::resource('product',\App\Http\Controllers\Admin\ProductController::class);
     Route::post('deleteImage/{productImage}',[\App\Http\Controllers\Admin\ProductController::class,'deleteImage'])->name('product.deleteImage');
 });
 
 // ############################################ Vendor Routes ##########################################
 
-Route::group(['middleware'=>'auth', 'prefix'=>'admin','as'=>'vendor.'],function(){
+Route::group(['middleware'=>'auth', 'prefix'=>'user','as'=>'vendor.'],function(){
     Route::resource('product',\App\Http\Controllers\vendor\ProductController::class);
     Route::post('deleteImage/{productImage}',[\App\Http\Controllers\vendor\ProductController::class,'deleteImage'])->name('product.deleteImage');
 });
