@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Slider;
 use App\Models\Wishlist;
@@ -33,5 +34,11 @@ class SiteController extends Controller
             return responseMessage(true,'manual','Added successfully');
         }
         return responseMessage(true,'manual','You need to login to the website');
+    }
+
+    public function category(Category $category){
+        $products = $category->products()->where('status','activated')
+            ->whereRelation('user','status','activated')    ->paginate(20);
+        return view('category',compact('products','category'));
     }
 }

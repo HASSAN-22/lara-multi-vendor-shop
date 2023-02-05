@@ -121,7 +121,7 @@ $categories = \App\Models\Category::get();
                                 <ul class="dropdown-menu m-0">
                                     @foreach($category->childes as $item)
                                         <li>
-                                            <a class="dropdown-item" href="#"> {{$item->title}} </a>
+                                            <a class="dropdown-item" href="{{route('front.category',['category'=>$item->id])}}"> {{$item->title}} </a>
                                             <x-navbar-component :category="$item"></x-navbar-component>
                                         </li>
                                     @endforeach

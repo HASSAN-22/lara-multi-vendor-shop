@@ -23,6 +23,7 @@ Route::group([],function(){
     Route::get('/',[\App\Http\Controllers\SiteController::class,'index'])->name('index');
     Route::get('product/{product}',[\App\Http\Controllers\SiteController::class,'product'])->name('front.product');
     Route::get('add-wishlist/{product}',[\App\Http\Controllers\SiteController::class,'addWishlist'])->name('front.add.wishlist');
+    Route::get('category/{category}',[\App\Http\Controllers\SiteController::class,'category'])->name('front.category');
 });
 
 
