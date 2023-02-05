@@ -21,6 +21,8 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::group([],function(){
     Route::get('/',[\App\Http\Controllers\SiteController::class,'index'])->name('index');
+    Route::get('product/{product}',[\App\Http\Controllers\SiteController::class,'product'])->name('front.product');
+    Route::get('add-wishlist/{product}',[\App\Http\Controllers\SiteController::class,'addWishlist'])->name('front.add.wishlist');
 });
 
 

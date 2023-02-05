@@ -28,6 +28,11 @@ if(! function_exists('removeFile')){
 }
 
 
+function discount(int $amount, int $discount){
+    return ($amount - ($amount * ($discount / 100)));
+}
+
+
 if(! function_exists('removeFiles')){
     function removeFiles($images){
         foreach ($images as $image){
