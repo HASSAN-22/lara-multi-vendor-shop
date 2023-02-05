@@ -228,7 +228,12 @@ $categories = \App\Models\Category::get();
 
 <!-- Back to Top -->
 <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
+@if(session('manual'))
+    <script>
+        let msg = '{{session('manual')}}'
+        alert(msg)
+    </script>
+@endif
 
 <!-- JavaScript Libraries -->
 <script src="{{asset('Front/js/jquery-3.4.1.min.js')}}"></script>

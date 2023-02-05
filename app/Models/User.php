@@ -83,4 +83,8 @@ class User extends Authenticatable
     public function shopName(){
         return $this->profile->shop_name;
     }
+
+    public function wishlists(){
+        return $this->hasMany(Wishlist::class);
+    }
 }
