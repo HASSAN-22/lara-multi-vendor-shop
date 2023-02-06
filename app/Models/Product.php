@@ -72,4 +72,12 @@ class Product extends Model
     public function productSpecifications(){
         return $this->hasMany(ProductSpecification::class);
     }
+
+    public function comments(){
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function ratings(){
+        return $this->hasMany(Rating::class);
+    }
 }

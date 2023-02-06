@@ -7,6 +7,7 @@ use App\Models\BasketProperty;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Rating;
 use App\Models\Slider;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
@@ -35,10 +36,15 @@ class SiteController extends Controller
     public function product(Product $product){
         $product = $product->where('id',$product->id)->with([
             'guarantee',
+            'user'=>fn($q)=>$q->select('id','name'),
             'brand',
+            'ratings',
             'productImages',
             'productProperties'=>fn($q)=>$q->with('property'),
             'productSpecifications',
+            'comments'=>fn($q)=>$q->with([
+                'user'=>fn($q)=>$q->select('id','name')->with('ratings')
+            ])
         ])->first();
         $relateds = $product->category->products()->whereRelation('user','status','activated')->where('status','activated')->inRandomOrder()->with(['image'])->get()->take(4);
         return view('product',compact('product','relateds'));
@@ -56,9 +62,9 @@ class SiteController extends Controller
                 ['user_id'=>$user->id,'product_id'=>$product->id],
                 ['user_id'=>$user->id,'product_id'=>$product->id]
             );
-            return responseMessage(true,'manual','Added successfully');
+            return responseMessage('','manual','Added successfully');
         }
-        return responseMessage(true,'manual','You need to login to the website');
+        return responseMessage('','manual','You need to login to the website');
     }
 
     /**
@@ -109,7 +115,41 @@ class SiteController extends Controller
             return response(['status'=>'success']);
         }catch (\Exception $e){
             DB::rollBack();
-            return response(['status'=>'error','error'=>$e->getMessage()],500);
+            return response(['status'=>'error'],500);
+        }
+    }
+
+    /**
+     * Insert comment and rating  for product
+     * @param Request $request
+     * @param Product $product
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
+    public function productComment(Request $request, Product $product){
+        $user = auth()->user();
+        if(!$user){
+            return responseMessage('','manual','You need to login to the website');
+        }
+        $request->validate([
+           'name'=>['required','string','max:255'],
+           'email'=>['required','string','max:255'],
+           'message'=>['required','string','max:1000'],
+           'rating'=>['required','string','in:1,2,3,4,5']
+        ]);
+
+        DB::beginTransaction();
+        try{
+            $product->comments()->create([
+               'user_id'=>$user->id,
+               'name'=>$request->name,
+               'email'=>$request->email,
+               'message'=>$request->message
+            ]);
+            Rating::firstOrCreate(['product_id'=>$product->id,'user_id'=>$user->id],['rating'=>$request->rating]);
+            return responseMessage('','manual','Your message has been added successfully');
+        }catch (\Exception $e){
+            DB::rollBack();
+            return responseMessage('','manual','Server error');
         }
     }
 }

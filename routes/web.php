@@ -25,6 +25,7 @@ Route::group([],function(){
     Route::get('add-wishlist/{product}',[\App\Http\Controllers\SiteController::class,'addWishlist'])->name('front.add.wishlist');
     Route::get('category/{category}',[\App\Http\Controllers\SiteController::class,'category'])->name('front.category');
     Route::post('add-basket/{product}',[\App\Http\Controllers\SiteController::class,'addBasket'])->name('front.add.basket');
+    Route::post('product-comment/{product}',[\App\Http\Controllers\SiteController::class,'productComment'])->name('front.product.comment');
 });
 
 

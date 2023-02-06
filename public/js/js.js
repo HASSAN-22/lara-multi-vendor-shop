@@ -94,3 +94,17 @@ function addToCart(productId){
     }
 
 }
+
+
+$(document).ready(function(){
+    $('.star>i').click(function (){
+        $('.star').find("i").each(function(){
+            $(this).removeClass('fa')
+            $(this).addClass('far')
+        });
+        if($(this).hasClass('far')){
+            $(this).addClass('fa')
+            $('.rating_star').val($(this).attr('data-star'))
+        }
+    })
+})

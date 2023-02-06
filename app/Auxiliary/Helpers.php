@@ -117,9 +117,8 @@ if(! function_exists('setEnvironmentValue')){
     }
 }
 
-if(! function_exists('calkRating')){
-    function calkRating($user){
-        $ratings =  $user->developerratings;
+if(! function_exists('calculateRating')){
+    function calculateRating($ratings){
         return number_format(($ratings->sum('rating') /  $ratings->count()),1);
     }
 }

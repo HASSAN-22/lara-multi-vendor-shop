@@ -115,9 +115,9 @@
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <a href="{{route('front.product',['product'=>$item->id])}}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
                         @guest()
-                            <a href="javascript:void(0)" onclick="alert('You need to login to the website')" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Wishlist</a>
+                            <a href="javascript:void(0)" onclick="alert('You need to login to the website')" class="btn btn-sm text-dark p-0"><i class="fas fa-heart text-primary mr-1"></i>Add To Wishlist</a>
                         @else
-                            <a href="{{route('front.add.wishlist',['product'=>$item->id])}}" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Wishlist</a>
+                            <a href="{{route('front.add.wishlist',['product'=>$item->id])}}" class="btn btn-sm text-dark p-0"><i class="fas fa-heart text-primary mr-1"></i>Add To Wishlist</a>
                         @endguest
                     </div>
                 </div>
@@ -177,9 +177,9 @@
                         <div class="card-footer d-flex justify-content-between bg-light border">
                             <a href="{{route('front.product',['product'=>$item->id])}}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
                             @guest()
-                                <a href="javascript:void(0)" onclick="alert('You need to login to the website')" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Wishlist</a>
+                                <a href="javascript:void(0)" onclick="alert('You need to login to the website')" class="btn btn-sm text-dark p-0"><i class="fas fa-heart text-primary mr-1"></i>Add To Wishlist</a>
                             @else
-                                <a href="{{route('front.add.wishlist',['product'=>$item->id])}}" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Wishlist</a>
+                                <a href="{{route('front.add.wishlist',['product'=>$item->id])}}" class="btn btn-sm text-dark p-0"><i class="fas fa-heart text-primary mr-1"></i>Add To Wishlist</a>
                             @endguest
                         </div>
                     </div>

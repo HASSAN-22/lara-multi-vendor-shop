@@ -52,6 +52,17 @@ class User extends Authenticatable
         return $query;
     }
 
+    /**
+     * @return mixed
+     */
+    public function shopName(){
+        return $this->profile->shop_name ?? 'N/A';
+    }
+
+    public function avatar(){
+        return $this->profile->avatar ?? '/user.png';
+    }
+
     public function isAdmin(){
         return $this->access == 'admin';
     }
@@ -80,15 +91,15 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
 
-    public function shopName(){
-        return $this->profile->shop_name;
-    }
-
     public function wishlists(){
         return $this->hasMany(Wishlist::class);
     }
 
     public function baskets(){
         return $this->hasMany(Basket::class);
+    }
+
+    public function ratings(){
+        return $this->hasMany(Rating::class);
     }
 }

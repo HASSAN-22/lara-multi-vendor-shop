@@ -13,6 +13,10 @@
     font-size: 14px !important;
 }
 
+.star > i{
+    cursor: pointer;
+}
+
 
 .product-box{
     background: #fafafa !important;
