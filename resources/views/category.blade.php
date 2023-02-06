@@ -1,5 +1,8 @@
 @extends('layouts.Front')
-
+@section('meta')
+    <meta content="{{$category->meta_keyword}}" name="keywords">
+    <meta content="{{$category->meta_description}}" name="description">
+@stop
 @section('content')
     <!-- Page Header Start -->
     <div class="container-fluid bg-secondary mb-5">
