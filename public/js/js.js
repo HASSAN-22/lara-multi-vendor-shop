@@ -84,17 +84,49 @@ function addToCart(productId){
                     alert('You need to login to the website')
                 }else if(data === 'productCount'){
                     alert('The product is not available in stock')
-                }else if(data === 'productCount'){
-                    alert('The product is not available in stock')
+                }else if(data === 'basketCount'){
+                    alert('The maximum number of product selections has been reached')
+                }else{
+                    alert('Server error')
                 }
             }else{
                 alert('Server error')
             }
+            $('.productCount').val(count);
         })
     }
 
 }
 
+function updateBasketCount(productId){
+   setTimeout(()=>{
+       let count = $('.cartCount').val();
+       axios.post('/update-basket-count/'+productId,{'_token':token(),count:count}).then(res=>{
+           alert('Added to basket successfully')
+           setTimeout(()=>{
+               window.location.reload();
+           },1000)
+       }).catch(err=>{
+           $('.cartCount').val(count);
+           let response = err.response
+           if(err.response){
+               let data = response.data.error;
+               if(data === 'userLogin'){
+                   alert('You need to login to the website')
+               }else if(data === 'productCount'){
+                   alert('The product is not available in stock')
+               }else if(data === 'basketCount'){
+                   alert('The maximum number of product selections has been reached')
+               }else{
+                   alert('Server error')
+               }
+           }else{
+               alert('Server error')
+           }
+
+       })
+   },700)
+}
 
 $(document).ready(function(){
     $('.star>i').click(function (){

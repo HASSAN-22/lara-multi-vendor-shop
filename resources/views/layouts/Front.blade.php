@@ -1,6 +1,13 @@
 <?php
 
 $categories = \App\Models\Category::get();
+$user = auth()->user();
+$basket = 0;
+$wishlist = 0;
+if($user){
+    $basket = $user->baskets()->count();
+    $wishlist = $user->wishlists()->count();
+}
 ?>
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -86,11 +93,11 @@ $categories = \App\Models\Category::get();
         <div class="col-lg-3 col-6 text-right">
             <a href="" class="btn border">
                 <i class="fas fa-heart text-primary"></i>
-                <span class="badge">0</span>
+                <span class="badge">{{$wishlist}}</span>
             </a>
-            <a href="" class="btn border">
+            <a href="{{route('front.cart')}}" class="btn border">
                 <i class="fas fa-shopping-cart text-primary"></i>
-                <span class="badge">0</span>
+                <span class="badge">{{$basket}}</span>
             </a>
         </div>
     </div>

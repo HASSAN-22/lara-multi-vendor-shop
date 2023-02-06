@@ -16,9 +16,9 @@ class CreateBasketPropertiesTable extends Migration
         Schema::create('basket_properties', function (Blueprint $table) {
             $table->id();
             $table->foreignId('basket_id');
-            $table->foreignId('property_id');
+            $table->foreignId('product_property_id');
             $table->foreign('basket_id')->references('id')->on('baskets')->onDelete('cascade');
-            $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
+            $table->foreign('product_property_id')->references('id')->on('product_properties')->onDelete('cascade');
         });
     }
 

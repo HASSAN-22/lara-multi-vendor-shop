@@ -26,6 +26,9 @@ Route::group([],function(){
     Route::get('category/{category}',[\App\Http\Controllers\SiteController::class,'category'])->name('front.category');
     Route::post('add-basket/{product}',[\App\Http\Controllers\SiteController::class,'addBasket'])->name('front.add.basket');
     Route::post('product-comment/{product}',[\App\Http\Controllers\SiteController::class,'productComment'])->name('front.product.comment');
+    Route::get('cart',[\App\Http\Controllers\SiteController::class,'cart'])->name('front.cart');
+    Route::post('update-basket-count/{product}',[\App\Http\Controllers\SiteController::class,'updateBasketCount'])->name('front.update.basket.count');
+    Route::post('delete-basket/{basket}',[\App\Http\Controllers\SiteController::class,'deleteBasket'])->name('front.delete-basket');
 });
 
 

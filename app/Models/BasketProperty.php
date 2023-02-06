@@ -13,13 +13,13 @@ class BasketProperty extends Model
 
     protected $table = 'basket_properties';
 
-    protected $fillable = ['basket_id','property_id'];
+    protected $fillable = ['basket_id','product_property_id'];
 
     public function basket(){
         return $this->belongsTo(Basket::class);
     }
 
-    public function property(){
-        return $this->belongsTo(Property::class);
+    public function productProperty(){
+        return $this->belongsTo(ProductProperty::class);
     }
 }

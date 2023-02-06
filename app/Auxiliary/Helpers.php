@@ -119,7 +119,11 @@ if(! function_exists('setEnvironmentValue')){
 
 if(! function_exists('calculateRating')){
     function calculateRating($ratings){
-        return number_format(($ratings->sum('rating') /  $ratings->count()),1);
+        try{
+            return number_format(($ratings->sum('rating') /  $ratings->count()),1);
+        }catch (Exception $e){
+            return 0;
+        }
     }
 }
 

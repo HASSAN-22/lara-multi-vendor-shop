@@ -84,7 +84,7 @@
                                 <i class="fa fa-minus"></i>
                             </button>
                         </div>
-                        <input type="text" class="form-control bg-secondary text-center productCount" value="1">
+                        <input type="text" class="form-control bg-secondary text-center productCount" min="0" value="1">
                         <div class="input-group-btn">
                             <button class="btn btn-primary btn-plus" onclick="incrementProduct('{{$price}}')">
                                 <i class="fa fa-plus"></i>

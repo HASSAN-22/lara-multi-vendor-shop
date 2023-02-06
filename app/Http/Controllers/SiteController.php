@@ -94,7 +94,7 @@ class SiteController extends Controller
         }
         $basketCount = $user->baskets()->where('product_id',$product->id)->count();
         if($product->count < ($basketCount + $request->count)){
-            return response(['status'=>'error','error'=>'The maximum number of product selections has been reached'],500);
+            return response(['status'=>'error','error'=>'basketCount'],500);
         }
         DB::beginTransaction();
         try{
@@ -106,7 +106,7 @@ class SiteController extends Controller
                 foreach($request->properties as $property){
                     $properties[] = [
                         'basket_id'=>$basket->id,
-                        'property_id'=>$property
+                        'product_property_id'=>$property
                     ];
                 }
                 BasketProperty::insert($properties);
@@ -115,8 +115,34 @@ class SiteController extends Controller
             return response(['status'=>'success']);
         }catch (\Exception $e){
             DB::rollBack();
-            return response(['status'=>'error'],500);
+            return response(['status'=>'error','e'=>$e->getMessage()],500);
         }
+    }
+
+    /**
+     * Update count of product in basket
+     * @param Request $request
+     * @param Product $product
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function updateBasketCount(Request  $request, Product  $product){
+        $user = auth()->user();
+        if(!$user){
+            return response(['status'=>'error','error'=>'userLogin'],500);
+        }
+        if($product->count == 0){
+            return response(['status'=>'error','error'=>'productCount'],500);
+        }
+        $basket= $user->baskets()->where('product_id',$product->id)->first();
+        if($basket && $product->count < $request->count){
+            return response(['status'=>'error','error'=>'basketCount'],500);
+        }
+        return $basket->update(['count'=>$request->count]) ? response(['status'=>'success']) : response(['status'=>'error'],500);
+    }
+
+    public function deleteBasket(Basket $basket){
+        $this->authorize('delete',$basket);
+        return $basket->delete() ? back()->with('manual','Delete successfully') : back()->with('manual','Server error');
     }
 
     /**
@@ -151,5 +177,11 @@ class SiteController extends Controller
             DB::rollBack();
             return responseMessage('','manual','Server error');
         }
+    }
+
+    public function cart(){
+        $user =auth()->user();
+        $baskets = $user ? $user->baskets()->with(['product'=>fn($q)=>$q->select('id','title','price','discount')->with('image')])->get() : [];
+        return view('cart',compact('baskets'));
     }
 }
