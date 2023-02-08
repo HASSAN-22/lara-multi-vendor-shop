@@ -42,6 +42,7 @@ Route::group(['middleware'=>'auth', 'prefix'=>'admin','as'=>'admin.'],function()
     Route::resource('user',\App\Http\Controllers\Admin\UserController::class);
     Route::resource('slider',\App\Http\Controllers\Admin\SliderController::class);
     Route::resource('product',\App\Http\Controllers\Admin\ProductController::class);
+    Route::resource('coupon',\App\Http\Controllers\Admin\CouponController::class)->parameters(['coupon' => 'id']);
     Route::post('deleteImage/{productImage}',[\App\Http\Controllers\Admin\ProductController::class,'deleteImage'])->name('product.deleteImage');
 });
 

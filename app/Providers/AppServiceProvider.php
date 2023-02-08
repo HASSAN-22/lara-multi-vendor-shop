@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+
 use Coupon\Coupon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
@@ -37,9 +38,9 @@ class AppServiceProvider extends ServiceProvider
     private function connectToDbForCoupon(): void
     {
         $host = config('database.connections.mysql.host');
-        $dbbmae = config('database.connections.mysql.database');
+        $dbname = config('database.connections.mysql.database');
         $user = config('database.connections.mysql.username');
         $pass = config('database.connections.mysql.password');
-        Coupon::setDbInfo("mysql:host=$host;dbname=$dbbmae;charset:utf-8", $user, $pass);
+        Coupon::setDbInfo("mysql:host=$host;dbname=$dbname;charset:utf-8", $user, $pass);
     }
 }

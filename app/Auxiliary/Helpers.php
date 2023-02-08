@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
@@ -27,6 +28,21 @@ if(! function_exists('removeFile')){
     }
 }
 
+
+if(! function_exists('paginate')){
+    function paginate($request, $items,$limit=10)
+    {
+        $total = count($items);
+        $page = $request->page ?? 1;
+        $perPage = (int) $limit;
+        $offset = (($request->page-1) * $perPage);
+        $items = array_slice($items, $offset, $perPage);
+        return new LengthAwarePaginator($items, $total, $perPage, $page, [
+            'path' => $request->url(),
+            'query' => $request->query()
+        ]);
+    }
+}
 
 function discount(int $amount, int $discount){
     return ($amount - ($amount * ($discount / 100)));

@@ -8,6 +8,7 @@
         <li><a href="{{route('admin.brand.index')}}">Brand list</a></li>
         <li><a href="{{route('admin.guarantee.index')}}">Guarantee list</a></li>
         <li><a href="{{route('admin.property.index')}}">Property list</a></li>
+        <li><a href="{{route('admin.coupon.index')}}">Coupon list</a></li>
     </ul>
 </li>
 <li><a><i class="fa fa-cube"></i> Product <span class="fa fa-chevron-down"></span></a>
