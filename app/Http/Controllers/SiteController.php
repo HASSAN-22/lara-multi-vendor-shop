@@ -6,6 +6,8 @@ use App\Models\Basket;
 use App\Models\BasketProperty;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Coupon;
+use App\Models\CouponUser;
 use App\Models\Product;
 use App\Models\Rating;
 use App\Models\Slider;
@@ -119,6 +121,8 @@ class SiteController extends Controller
         }
     }
 
+
+
     /**
      * Update count of product in basket
      * @param Request $request
@@ -180,8 +184,68 @@ class SiteController extends Controller
     }
 
     public function cart(){
-        $user =auth()->user();
-        $baskets = $user ? $user->baskets()->with(['product'=>fn($q)=>$q->select('id','title','price','discount')->with('image')])->get() : [];
-        return view('cart',compact('baskets'));
+        $user = auth()->user();
+        if(!$user){
+            return responseMessage('','manual','You need to login to the website');
+        }
+        $baskets = $user->baskets()->with(['product'=>fn($q)=>$q->select('id','title','price','discount')->with('image')])->get();
+        $couponUser = $user->couponUsers()
+            ->whereRelation('coupon',fn($q)=>$q->whereRelation('couponProducts',fn($q)=>$q->whereIn('product_id',$baskets->pluck('product_id')->toArray())))
+            ->with('coupon')->first();
+        $discount = $couponUser ? $couponUser->coupon->discount * $couponUser->count : 0;
+        return view('cart',compact('baskets','discount'));
+    }
+
+    public function cartCoupon(Request $request){
+        $user = auth()->user();
+        if(!$user){
+            return responseMessage('','manual','You need to login to the website');
+        }
+        $coupon = Coupon::where('code',$request->coupon)->first();
+
+        $result = $this->countIsValid($request, $user);
+
+        if(!is_null($result)){
+            list($check, $count) = $this->incrementCouponCountForUser($user, $coupon);
+            if($check){
+                return back()->with('discount',$coupon->discount*$count);
+            }
+        }
+
+        return responseMessage('','manual','Coupon is not valid or expire');
+    }
+
+    /**
+     * @param Request $request
+     * @param \Illuminate\Contracts\Auth\Authenticatable $user
+     * @return mixed
+     */
+    public function countIsValid(Request $request, \Illuminate\Contracts\Auth\Authenticatable $user)
+    {
+        $basketProducts = $user->baskets->pluck('product_id')->toArray();
+        return Coupon::where('expire_at', '>', now())->where('code', $request->coupon)
+            ->where(fn($q)=>$q->whereRelation('couponProducts',fn($q)=>$q->whereIn('product_id', $basketProducts)))->first();
+    }
+
+    /**
+     * @param \Illuminate\Contracts\Auth\Authenticatable $user
+     * @param $coupon
+     * @return array
+     */
+    public function incrementCouponCountForUser(\Illuminate\Contracts\Auth\Authenticatable $user, $coupon): array
+    {
+        $coupon_user = $user->couponUsers()->where('coupon_id', $coupon->id)->first();
+        $couponUser = CouponUser::firstOrNew(['user_id' => $user->id, 'coupon_id' => $coupon->id]);
+        $check = false;
+        if (is_null($coupon_user) or ($coupon_user->status == 'no' and $coupon_user->count != $coupon->limit_user)) {
+            $couponUser->status = 'no';
+            $couponUser->count += 1;
+            $check = true;
+        } else {
+            $couponUser->status = 'yes';
+        }
+
+        $couponUser->save();
+        return [$check, $couponUser->count];
     }
 }

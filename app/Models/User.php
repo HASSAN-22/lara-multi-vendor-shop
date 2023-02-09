@@ -102,4 +102,8 @@ class User extends Authenticatable
     public function ratings(){
         return $this->hasMany(Rating::class);
     }
+
+    public function couponUsers(){
+        return $this->hasMany(CouponUser::class);
+    }
 }

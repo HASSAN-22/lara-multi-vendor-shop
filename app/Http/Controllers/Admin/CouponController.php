@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CouponRequest;
+use App\Models\Coupon;
 use App\Models\Product;
-use App\Models\User;
-use Coupon\Coupon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CouponController extends Controller
 {
@@ -18,9 +18,8 @@ class CouponController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny',User::class);
-        $coupons = $this->search($request, Coupon::all());
-        $coupons = paginate($request, $coupons, config('app.paginate'));
+        $this->authorize('viewAny',Coupon::class);
+        $coupons = Coupon::latest()->search()->paginate(config('app.paginate'));
         return view('admin.coupon.index',compact('coupons'));
     }
 
@@ -31,7 +30,7 @@ class CouponController extends Controller
      */
     public function create()
     {
-        $this->authorize('create',User::class);
+        $this->authorize('create',Coupon::class);
         $products = Product::where('status','activated')->get();
         return view('admin.coupon.create',compact('products'));
     }
@@ -44,12 +43,22 @@ class CouponController extends Controller
      */
     public function store(CouponRequest $request)
     {
-        $this->authorize('create',User::class);
-        $code = Coupon::generateCode(8,true,true,false);
+        $this->authorize('create',Coupon::class);
+        DB::beginTransaction();
         try{
-            Coupon::store($request->product_ids, 'product',$code,$request->discount,$request->limit_user,$request->expire_at);
+            $coupon = Coupon::create([
+                'code'=>$request->code,
+                'limit_user'=>$request->limit_user,
+                'discount'=>$request->discount,
+                'expire_at'=>$request->expire_at,
+            ]);
+
+            $coupon->belongsToManyCouponProducts()->attach($request->product_ids);
+            DB::commit();
             return responseMessage(true, 'create');
         }catch (\Exception $e){
+            DB::rollBack();
+            dd($e->getMessage());
             return responseMessage(false, 'create');
         }
 
@@ -69,14 +78,15 @@ class CouponController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  Coupon $coupon
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Coupon $coupon)
     {
-        $this->authorize('create',User::class);
+        $this->authorize('update',$coupon);
         $products = Product::where('status','activated')->get();
-        list($coupon, $couponProducts) = array_values(Coupon::show($id));
+        $coupon = $coupon->where('id',$coupon->id)->with('couponProducts')->first();
+        $couponProducts = $coupon->couponProducts->pluck('id')->toArray();
         return view('admin.coupon.update',compact('coupon','couponProducts','products'));
     }
 
@@ -84,56 +94,44 @@ class CouponController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Coupon $coupon
      * @return \Illuminate\Http\Response
      */
-    public function update(CouponRequest $request, $id)
+    public function update(CouponRequest $request, Coupon $coupon)
     {
-        $this->authorize('create',User::class);
+        $this->authorize('update',$coupon);
+        DB::beginTransaction();
         try{
-            $coupon = Coupon::getCouponbyId($id);
-            Coupon::update($id,$request->product_ids, 'product',$coupon['code'],$request->discount,$request->limit_user,$request->expire_at);
-            return responseMessage(true, 'update');
+            $coupon->update([
+                'code'=>$request->code,
+                'limit_user'=>$request->limit_user,
+                'discount'=>$request->discount,
+                'expire_at'=>$request->expire_at,
+            ]);
+
+            $coupon->belongsToManyCouponProducts()->sync($request->product_ids);
+            DB::commit();
+            return responseMessage(true, 'create');
         }catch (\Exception $e){
-            return responseMessage(false, 'update');
+            DB::rollBack();
+            return responseMessage(false, 'create');
         }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  Coupon $coupon
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Coupon $coupon)
     {
-        $this->authorize('create',User::class);
+        $this->authorize('delete',$coupon);
         try{
-            Coupon::delete($id);
+            $coupon->delete();
             return responseMessage(true, 'delete');
         }catch (\Exception $e){
             return responseMessage(false, 'delete');
         }
-    }
-
-    /**
-     * @param Request $request
-     * @param $coupons
-     * @return array|mixed
-     */
-    public function search(Request $request, $coupons)
-    {
-        $search = $request->search;
-        if ($search != '') {
-            $coupons = array_filter($coupons, function ($item) use ($search) {
-                if ($item['code'] == $search)
-                    return $item;
-                if ($item['percent'] == str_replace('%', '', $search))
-                    return $item;
-                if (explode(' ', $item['expire_at'])[0] == $search)
-                    return $item;
-            });
-        }
-        return $coupons;
     }
 }

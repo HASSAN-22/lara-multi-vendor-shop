@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Basket;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Coupon;
 use App\Models\Guarantee;
 use App\Models\Product;
 use App\Models\Profile;
@@ -14,6 +15,7 @@ use App\Models\User;
 use App\Policies\BasketPolicy;
 use App\Policies\BrandPolicy;
 use App\Policies\CategoryPolicy;
+use App\Policies\CouponPolicy;
 use App\Policies\GuaranteePolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\ProfilePolilcy;
@@ -40,6 +42,7 @@ class AuthServiceProvider extends ServiceProvider
         Profile::class => ProfilePolilcy::class,
         Slider::class => SliderPolicy::class,
         Basket::class => BasketPolicy::class,
+        Coupon::class => CouponPolicy::class,
     ];
 
     /**

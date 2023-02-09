@@ -71,7 +71,7 @@
                         @foreach($productProperties as $key=>$productProperty)
                             <div class="custom-control custom-radio custom-control-inline property">
                                 <input type="hidden" name="{{$property}}[{{$productProperty['name']}}]" value="{{$productProperty['id']}}" />
-                                <input onclick="property(`{{$price}}`)" type="radio" name="{{$property}}" value="{{$productProperty['price']}}" class="custom-control-input" id="{{$property}}-{{$key}}">
+                                <input @if($productProperty['count'] > 0) onclick="property(`{{$price}}`)" @endif type="radio" name="{{$property}}" value="{{$productProperty['price']}}" class="custom-control-input" id="{{$property}}-{{$key}}">
                                 <label class="custom-control-label" for="{{$property}}-{{$key}}">{{$productProperty['name']}}</label>
                             </div>
                         @endforeach

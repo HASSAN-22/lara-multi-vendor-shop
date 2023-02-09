@@ -40,8 +40,8 @@
                                         <td class="text-center">{{$item['limit_user']}}</td>
                                         <td class="text-center">{{explode(' ',$item['expire_at'])[0]}}</td>
                                         <td class="flex align-center justify-center">
-                                            <a href="{{route('admin.coupon.edit',['id'=>$item['id']])}}" class="btn btn-info font-14">Edit</a>
-                                            <form action="{{route('admin.coupon.destroy',['id'=>$item['id']])}}" method="post">
+                                            <a href="{{route('admin.coupon.edit',['coupon'=>$item['id']])}}" class="btn btn-info font-14">Edit</a>
+                                            <form action="{{route('admin.coupon.destroy',['coupon'=>$item['id']])}}" method="post">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" onclick="return confirm('Are you sure you want to delete this item?')" class="btn btn-danger font-14">Delete</button>

@@ -29,6 +29,7 @@ Route::group([],function(){
     Route::get('cart',[\App\Http\Controllers\SiteController::class,'cart'])->name('front.cart');
     Route::post('update-basket-count/{product}',[\App\Http\Controllers\SiteController::class,'updateBasketCount'])->name('front.update.basket.count');
     Route::post('delete-basket/{basket}',[\App\Http\Controllers\SiteController::class,'deleteBasket'])->name('front.delete-basket');
+    Route::post('cart-coupon',[\App\Http\Controllers\SiteController::class,'cartCoupon'])->name('front.cart.coupon');
 });
 
 
@@ -42,7 +43,7 @@ Route::group(['middleware'=>'auth', 'prefix'=>'admin','as'=>'admin.'],function()
     Route::resource('user',\App\Http\Controllers\Admin\UserController::class);
     Route::resource('slider',\App\Http\Controllers\Admin\SliderController::class);
     Route::resource('product',\App\Http\Controllers\Admin\ProductController::class);
-    Route::resource('coupon',\App\Http\Controllers\Admin\CouponController::class)->parameters(['coupon' => 'id']);
+    Route::resource('coupon',\App\Http\Controllers\Admin\CouponController::class);
     Route::post('deleteImage/{productImage}',[\App\Http\Controllers\Admin\ProductController::class,'deleteImage'])->name('product.deleteImage');
 });
 

@@ -25,6 +25,7 @@
                         <th>Image</th>
                         <th>Products</th>
                         <th>Price</th>
+                        <th>Property price</th>
                         <th>Quantity</th>
                         <th>Total</th>
                         <th>Remove</th>
@@ -37,14 +38,16 @@
                                 <?php
                                     $product = $basket->product;
                                     $price = discount($product->price, $product->discount);
-                                    $totalPrice = $price * $basket->count;
-                                    $total += $totalPrice;
+                                    $propertyPrice = $basket->basketProperties()->with('productProperty')->get()->sum('productProperty.price');
+                                    $totalPrice = ($price * $basket->count) + $propertyPrice;
+                                    $total += ($totalPrice + $propertyPrice);
                                 ?>
                             <td class="align-middle">
                                 <img src="{{$product->image->image}}" alt="" width="120" height="120">
                             </td>
                             <td class="align-middle"><a href="{{route('front.product',['product'=>$product->id])}}">{{$product->title}}</a></td>
                             <td class="align-middle">${{number_format($price,2)}}</td>
+                            <td class="align-middle">${{number_format($propertyPrice,2)}}</td>
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
@@ -60,22 +63,23 @@
                                     </div>
                                 </div>
                             </td>
-                        <td class="align-middle">${{number_format($totalPrice,2)}}</td>
-                        <td class="align-middle">
-                            <form action="{{route('front.delete-basket',['basket'=>$basket->id])}}" method="post">
-                                @csrf
-                                <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button>
-                            </form>
-                        </td>
+                            <td class="align-middle">${{number_format($totalPrice,2)}}</td>
+                            <td class="align-middle">
+                                <form action="{{route('front.delete-basket',['basket'=>$basket->id])}}" method="post">
+                                    @csrf
+                                    <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button>
+                                </form>
+                            </td>
                     </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
             <div class="col-lg-4">
-                <form class="mb-5" action="">
+                <form class="mb-5" action="{{route('front.cart.coupon')}}" method="post">
+                    @csrf
                     <div class="input-group">
-                        <input type="text" class="form-control p-4" placeholder="Coupon Code">
+                        <input type="text" name="coupon" class="form-control p-4" placeholder="Coupon Code">
                         <div class="input-group-append">
                             <button class="btn btn-primary">Apply Coupon</button>
                         </div>
@@ -90,6 +94,12 @@
                             <h6 class="font-weight-medium">Subtotal</h6>
                             <h6 class="font-weight-medium">${{number_format($total,2)}}</h6>
                         </div>
+                        @if(session('discount') or $discount != 0)
+                            <div class="d-flex justify-content-between mb-3 pt-1">
+                                <h6 class="font-weight-medium">Coupon discount</h6>
+                                <h6 class="font-weight-medium">{{session('discount') ?? $discount}}%</h6>
+                            </div>
+                        @endif
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
                             <h6 class="font-weight-medium">$10</h6>
@@ -98,7 +108,15 @@
                     <div class="card-footer border-secondary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
                             <h5 class="font-weight-bold">Total</h5>
-                            <h5 class="font-weight-bold">${{number_format($total+10,2)}}</h5>
+                            @if(session('discount') or $discount != 0)
+                                <?php
+                                    $percent = session('percent') ?? $discount;
+                                ?>
+                                <h5 class="font-weight-bold">${{number_format(discount($total,$percent)+10,2)}}</h5>
+                            @else
+                                <h5 class="font-weight-bold">${{number_format($total+10,2)}}</h5>
+                            @endif
+
                         </div>
                         <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
                     </div>

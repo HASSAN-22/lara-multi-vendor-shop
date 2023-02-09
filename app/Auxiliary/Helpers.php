@@ -44,7 +44,7 @@ if(! function_exists('paginate')){
     }
 }
 
-function discount(int $amount, int $discount){
+function discount(float $amount, int $discount){
     return ($amount - ($amount * ($discount / 100)));
 }
 

@@ -28,6 +28,7 @@ class CouponRequest extends FormRequest
             'product_ids.*'=>['required','numeric','exists:products,id'],
             'discount'=>['required','numeric','digits_between:0,100'],
             'limit_user'=>['required','numeric'],
+            'code'=>['required','string','max:255'],
             'expire_at'=>['required','date','date_format:Y-m-d']
         ];
     }
