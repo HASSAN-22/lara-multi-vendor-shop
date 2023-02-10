@@ -8,7 +8,10 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\CouponUser;
+use App\Models\Order;
+use App\Models\OrderUser;
 use App\Models\Product;
+use App\Models\Profile;
 use App\Models\Rating;
 use App\Models\Slider;
 use App\Models\Wishlist;
@@ -215,12 +218,114 @@ class SiteController extends Controller
         return responseMessage('','manual','Coupon is not valid or expire');
     }
 
+    public function checkout(){
+        $user = auth()->user();
+        if(!$user){
+            return responseMessage('','manual','You need to login to the website');
+        }
+        $baskets = $user->baskets()->with(['product'=>fn($q)=>$q->select('id','title','price','discount'),'basketProperties'])->get();
+        $couponUser = $user->couponUsers()
+            ->whereRelation('coupon',fn($q)=>$q->whereRelation('couponProducts',fn($q)=>$q->whereIn('product_id',$baskets->pluck('product_id')->toArray())))
+            ->with('coupon')->first();
+        $discount = $couponUser ? $couponUser->coupon->discount * $couponUser->count : 0;
+
+        return view('checkout',compact('user','baskets','discount'));
+    }
+
+    public function order(Request $request){
+        $user = auth()->user();
+        if(!$user){
+            return responseMessage('','manual','You need to login to the website');
+        }
+        $request->validate([
+            'name'=>['required','string','max:255'],
+            'email'=>['required','string','max:255','email','unique:users,id,email'],
+            'address'=>['required','string','max:255'],
+            'city'=>['required','string','max:255'],
+            'province'=>['required','string','max:255'],
+            'plak'=>['required','numeric','unique:profiles,plak'],
+            'national_id'=>['required','numeric','unique:profiles,id,national_id'],
+            'payment'=>['required','string','in:paypal,directcheck,banktransfer'],
+        ]);
+
+        DB::beginTransaction();
+        try{
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->save();
+            Profile::updateOrCreate(['user_id'=>$user->id],[
+                'address'=>$request->address,
+                'city'=>$request->city,
+                'province'=>$request->province,
+                'plak'=>$request->plak,
+                'national_id'=>$request->national_id,
+            ]);
+            $baskets = $user->baskets()->with(['product'=>fn($q)=>$q->select('id','user_id','title','price','discount','count'),'basketProperties'])->get();
+            $couponUser = $user->couponUsers()
+                ->whereRelation('coupon',fn($q)=>$q->whereRelation('couponProducts',fn($q)=>$q->whereIn('product_id',$baskets->pluck('product_id')->toArray())))
+                ->with('coupon')->first();
+            $discount = $couponUser ? $couponUser->coupon->discount * $couponUser->count : 0;
+            $order = Order::create([
+                'user_id'=>$user->id,
+                'status'=>'awaiting_payment',
+                'discount'=>$discount,
+                'coupon_code'=>$couponUser ? $couponUser->coupon->code : null
+            ]);
+
+            $orderUsers = [];
+            foreach ($baskets as $key=>$basket) {
+                $full_amount = 0;
+                $product= $basket->product;
+                if($product->count == 0){
+                    return responseMessage('','manual','Some selected products are out of stock');
+                }
+                $properties = $basket->basketProperties()->with('productProperty')->get();
+                $full_amount += $product->price;
+                $propertyData = [];
+                foreach ($properties as $property){
+                    $productProperty = $property->productProperty;
+                    $full_amount += $productProperty->price;
+                    $propertyData[] = [
+                        'name'=>$productProperty->name,
+                        'price'=>$productProperty->price,
+                    ];
+                    $productProperty->count -= 1;
+                    $productProperty->save();
+                }
+                 $orderUsers[] = [
+                     'order_id'=>$order->id,
+                     'user_id'=>$product->user_id,
+                     'price'=>(double)$product->price,
+                     'title'=>$product->title,
+                     'count'=>$basket->count,
+                     'product_discount'=>$product->discount,
+                     'full_amount'=>$full_amount,
+                     'property'=> json_encode($propertyData),
+                     'created_at'=>now(),
+                     'updated_at'=>now(),
+                 ];
+
+                $product->count -= $basket->count;
+                $product->save();
+            }
+            $orderUser = OrderUser::insert($orderUsers);
+            if($orderUser){
+                $user->baskets()->delete();
+            }
+            DB::commit();
+            return view('order_done');
+        }catch (\Exception $e){
+            DB::rollBack();
+            return responseMessage('','manual','Server error');
+        }
+    }
+
     /**
      * @param Request $request
      * @param \Illuminate\Contracts\Auth\Authenticatable $user
      * @return mixed
      */
-    public function countIsValid(Request $request, \Illuminate\Contracts\Auth\Authenticatable $user)
+    private function countIsValid(Request $request, \Illuminate\Contracts\Auth\Authenticatable $user)
     {
         $basketProducts = $user->baskets->pluck('product_id')->toArray();
         return Coupon::where('expire_at', '>', now())->where('code', $request->coupon)
@@ -232,7 +337,7 @@ class SiteController extends Controller
      * @param $coupon
      * @return array
      */
-    public function incrementCouponCountForUser(\Illuminate\Contracts\Auth\Authenticatable $user, $coupon): array
+    private function incrementCouponCountForUser(\Illuminate\Contracts\Auth\Authenticatable $user, $coupon): array
     {
         $coupon_user = $user->couponUsers()->where('coupon_id', $coupon->id)->first();
         $couponUser = CouponUser::firstOrNew(['user_id' => $user->id, 'coupon_id' => $coupon->id]);
